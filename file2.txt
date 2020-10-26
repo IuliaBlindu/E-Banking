@@ -1,0 +1,2 @@
+User{username='asd', password='asd'} Person{lastName='asd', firstName='asd', gender=FEMALE, dateOfBirth=Sat Nov 11 00:00:00 EET 1111, CNP='asd', series='asd', number='asd', city='asd', street='asd', streetNumber='asd', email='asd', phoneNumber='asd'}
+User{username='valentin', password='valentin'} Person{lastName='libar', firstName='valentin', gender=MALE, dateOfBirth=Tue Apr 30 00:00:00 EEST 2002, CNP='plm', series='plm', number='plm', city='plm', street='plm', streetNumber='plm', email='plm', phoneNumber='plm'}
