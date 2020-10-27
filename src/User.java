@@ -12,15 +12,15 @@ public class User extends Person implements Serializable {
         this.password = password;
     }
 
-    public User(String username, String password, String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP, String series, String number, String city, String street, String streetNumber, String email, String phoneNumber) {
-        super(lastName, firstName, gender, dateOfBirth, CNP, series, number, city, street, streetNumber, email, phoneNumber);
+    public User(String username, String password, String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP, String ID, String address, String email, String phoneNumber) {
+        super(lastName, firstName, gender, dateOfBirth, CNP, ID, address, email, phoneNumber);
         this.username = username;
         this.password = password;
     }
 
     public User(User that){
-        super(that.getLastName(),that.getFirstName(),that.getGender(),that.getDateOfBirth(),that.getCNP(),that.getSeries(),
-                that.getNumber(), that.getCity(),that.getStreet(),that.getStreetNumber(),that.getEmail(),that.getPhoneNumber());
+        super(that.getLastName(),that.getFirstName(),that.getGender(),that.getDateOfBirth(),that.getCNP(),that.getID(),
+                that.getAddress(), that.getEmail(),that.getPhoneNumber());
         this.username=that.getUsername();
         this.password=that.getPassword();
     }
@@ -41,7 +41,7 @@ public class User extends Person implements Serializable {
     }
 
     @Override
-    public void helloUser(String username) {
+    public void welcome(String username) {
         System.out.println("Welcome" + username);
     }
 

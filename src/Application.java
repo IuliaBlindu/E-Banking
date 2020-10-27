@@ -14,7 +14,8 @@ public class Application implements Serializable {
 
         do {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Admin Options: \n1.Add new user \n2.View existing user \n3.Exit");
+        System.out.println("Admin Options: \n1.Add new user \n2.View existing user \n3. Add Bank \n4. See Banks" +
+                "\n5. Add Bank Account \n6. See Bank Account \n7.Exit ");
         String adminChoice = scan.nextLine();
 
         switch(adminChoice){
@@ -25,6 +26,18 @@ public class Application implements Serializable {
                 viewUsers();
                 break;
             case "3":
+                addNewBank();
+                break;
+            case "4":
+                viewBanks();
+                break;
+            case "5":
+                addNewBankAccount();
+                break;
+            case "6":
+                viewBankAccounts();
+                break;
+            case "7":
                 save(users);
                 System.out.println("Exiting Program...");
                 System.exit(0);
@@ -37,45 +50,7 @@ public class Application implements Serializable {
     }
 
     private static void load() {
-//        try {
-//            BufferedReader reader = new BufferedReader(new FileReader("file2.txt"));
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-////                System.out.println(line);
-//                String delims = "['=,]+";
-//                String[] tokens = line.split(delims);
-//                String username = tokens[1];
-//                String password = tokens[3];
-//                String lastName = tokens[5];
-//                String firstName = tokens[7];
-//                Gender gender;
-//                if (tokens[9].equals("FEMALE"))
-//                    gender = Gender.FEMALE;
-//                else if (tokens[9].equals("MALE"))
-//                    gender = Gender.MALE;
-//                else
-//                    gender = Gender.UNSPECIFIED;
-//                Date dateOfBirth;
-//                SimpleDateFormat formatter = new SimpleDateFormat("E MMM d HH:mm:ss z yyyy");
-//                dateOfBirth = formatter.parse(tokens[11]);
-//                String cnp = tokens[13];
-//                String series = tokens[15];
-//                String number = tokens[17];
-//                String city = tokens[19];
-//                String street = tokens[21];
-//                String streetNumber = tokens[23];
-//                String email = tokens[25];
-//                String phoneNumber = tokens[27];
-//
-//                User newUser = new User(username, password, lastName, firstName, gender, dateOfBirth, cnp, series, number, city, street, streetNumber, email, phoneNumber);
-//                System.out.println(newUser);
-//                users[i] = newUser;
-//                i++;
-//            }
-//        } catch (IOException | ParseException e) {
-//            e.printStackTrace();
-//        }
-        System.out.println("hello");
+
         try(FileInputStream in = new FileInputStream("file.txt");
             ObjectInputStream s = new ObjectInputStream(in)) {
             users = (User[]) s.readObject();
@@ -83,7 +58,7 @@ public class Application implements Serializable {
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-        System.out.println(Arrays.toString(users));
+
         for (User user : users) {
             if(user != null)
             {
@@ -96,19 +71,6 @@ public class Application implements Serializable {
     }
 
     private static void save(User[] users) {
-//        try {
-//            BufferedWriter writer = new BufferedWriter(new FileWriter("file2.txt"));
-//            for(User user : users) {
-//                if (user != null) {
-//                    writer.write(user.toString() + "\n");
-//                    System.out.println(user.toString() + "\n");
-//                }
-//            }
-//            writer.flush();
-//            writer.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         try(FileOutputStream f = new FileOutputStream("file.txt");
             ObjectOutput s = new ObjectOutputStream(f)) {
@@ -146,39 +108,37 @@ public class Application implements Serializable {
         Date date = new SimpleDateFormat("dd/MM/yyyy").parse(dateScan);
         System.out.println("CNP:");
         String CNP= userScan.nextLine();
-        System.out.println("ID Series:");
-        String series= userScan.nextLine();
-        System.out.println("ID Number:");
-        String number= userScan.nextLine();
-        System.out.println("City:");
-        String city= userScan.nextLine();
-        System.out.println("Street:");
-        String street= userScan.nextLine();
-        System.out.println("Street Number:");
-        String streetNumber= userScan.nextLine();
+        System.out.println("ID (Series+Number):");
+        String ID= userScan.nextLine();
+        System.out.println("Address:");
+        String address= userScan.nextLine();
         System.out.println("Email:");
         String email= userScan.nextLine();
         System.out.println("Phone Number:");
         String phoneNumber=userScan.nextLine();
 
-        User u = new User(username, password, lastName, firstName, gender, date, CNP, series,
-                            number, city, street, streetNumber, email, phoneNumber);
+        User u = new User(username, password, lastName, firstName, gender, date, CNP, ID,
+                           address, email, phoneNumber);
 
-
-        // i should get the number of existing elements in file - do this in load
-        System.out.println(u);
-        users[i]=u;
-        i=i+1;
-        System.out.println(i);
-        for(int j=0; j<i;j++){
-            System.out.println(users[j]);
-        }
-
+        users[i]=new User(u);
 
     }
+
+
+    private static void addNewBank() {
+    }
+
+    private static void viewBanks() {
+    }
+
+
     private static void addNewBankAccount(){
 
     }
+
+    private static void viewBankAccounts() {
+    }
+
 
     private static void viewUsers() {
         for (User user : users) {

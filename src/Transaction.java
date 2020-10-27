@@ -1,14 +1,17 @@
 public class Transaction {
+
     private String id;
     private String receiverBankAccount;
     private String senderBankAccount;
+    private Category category;
     private int amount;
     private String details;
 
-    public Transaction(String id, String receiverBankAccount, String senderBankAccount, int amount, String details) {
+    public Transaction(String id, String receiverBankAccount, String senderBankAccount, Category category, int amount, String details) {
         this.id = id;
         this.receiverBankAccount = receiverBankAccount;
         this.senderBankAccount = senderBankAccount;
+        this.category = category;
         this.amount = amount;
         this.details = details;
     }
@@ -35,6 +38,14 @@ public class Transaction {
 
     public void setSenderBankAccount(String senderBankAccount) {
         this.senderBankAccount = senderBankAccount;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public int getAmount() {

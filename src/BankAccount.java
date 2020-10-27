@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class BankAccount {
+    private Bank bank;
     private User accountOwner;
     private String accountNumber;
     private String cardNumber;
@@ -9,15 +10,23 @@ public class BankAccount {
     private String CVV;
     private int balance;
 
-    public BankAccount(User accountOwner, String accountNumber, String cardNumber, Date cardExpiryDate,
-                       String CVV, int balance, ArrayList<Transaction> transactions)
-    {
+    public BankAccount(Bank bank, User accountOwner, String accountNumber, String cardNumber,
+                       Date cardExpiryDate, String CVV, int balance) {
+        this.bank = bank;
         this.accountOwner = accountOwner;
         this.accountNumber = accountNumber;
         this.cardNumber = cardNumber;
         this.cardExpiryDate = cardExpiryDate;
         this.CVV = CVV;
         this.balance = balance;
+    }
+
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBank(Bank bank) {
+        this.bank = bank;
     }
 
     public User getAccountOwner() {
@@ -67,5 +76,4 @@ public class BankAccount {
     public void setBalance(int balance) {
         this.balance = balance;
     }
-
 }

@@ -3,54 +3,41 @@ import java.util.Date;
 
 public abstract class Person implements Serializable {
 
-    protected String lastName;
+    private String lastName;
     private String firstName;
     private Gender gender;
     private Date dateOfBirth;
     private String CNP;
-    private String series;
-    private String number;
-    private String city;
-    private String street;
-    private String streetNumber;
+    private String ID;
+    private String address;
     private String email;
     private String phoneNumber;
 
-    public Person()
-    {
+    public Person(){
         super();
         this.lastName = "lastName";
         this.firstName = "firstName";
         this.gender = Gender.UNSPECIFIED;
         this.dateOfBirth = null;
         this.CNP = null;
-        this.series = null;
-        this.number = null;
-        this.city = null;
-        this.street = null;
-        this.streetNumber = null;
+        this.ID = null;
+        this.address = null;
         this.email=null;
         this.phoneNumber= null;
     }
 
-    public Person(String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP, String series,
-                  String number, String city, String street, String streetNumber, String email, String phoneNumber)
-    {
+    public Person(String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP,
+                  String ID, String address, String email, String phoneNumber) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.gender = gender;
         this.dateOfBirth = dateOfBirth;
         this.CNP = CNP;
-        this.series = series;
-        this.number = number;
-        this.city = city;
-        this.street = street;
-        this.streetNumber = streetNumber;
+        this.ID = ID;
+        this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
-
-
 
     public String getLastName() {
         return lastName;
@@ -92,44 +79,20 @@ public abstract class Person implements Serializable {
         this.CNP = CNP;
     }
 
-    public String getSeries() {
-        return series;
+    public String getID() {
+        return ID;
     }
 
-    public void setSeries(String series) {
-        this.series = series;
+    public void setID(String ID) {
+        this.ID = ID;
     }
 
-    public String getNumber() {
-        return number;
+    public String getAddress() {
+        return address;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getStreetNumber() {
-        return streetNumber;
-    }
-
-    public void setStreetNumber(String streetNumber) {
-        this.streetNumber = streetNumber;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEmail() {
@@ -148,7 +111,9 @@ public abstract class Person implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public abstract void helloUser(String username);
+    public void welcome(String username){
+
+    }
 
     @Override
     public String toString() {
@@ -157,11 +122,8 @@ public abstract class Person implements Serializable {
                 ", gender=" + gender +
                 ", dateOfBirth=" + dateOfBirth +
                 ", CNP='" + CNP + '\'' +
-                ", series='" + series + '\'' +
-                ", number='" + number + '\'' +
-                ", city='" + city + '\'' +
-                ", street='" + street + '\'' +
-                ", streetNumber='" + streetNumber + '\'' +
+                ", ID='" + ID + '\'' +
+                ", address='" + address + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
