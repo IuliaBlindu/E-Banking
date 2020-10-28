@@ -6,10 +6,10 @@ public class User extends Person implements Serializable {
     private String username;
     private String password;
 
-    public User(String username, String password) {
+    public User() {
         super();
-        this.username = username;
-        this.password = password;
+        this.username = null;
+        this.password = null;
     }
 
     public User(String username, String password, int id, String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP, String ID, String address, String email, String phoneNumber) {

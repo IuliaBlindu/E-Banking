@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class BankAccount {
+public class BankAccount implements Serializable {
     private Bank bank;
     private User accountOwner;
     private String accountNumber;
@@ -75,5 +76,18 @@ public class BankAccount {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    @Override
+    public String toString() {
+        return "BankAccount{" +
+                "bank=" + bank +
+                ", accountOwner=" + accountOwner +
+                ", accountNumber='" + accountNumber + '\'' +
+                ", cardNumber='" + cardNumber + '\'' +
+                ", cardExpiryDate=" + cardExpiryDate +
+                ", CVV='" + CVV + '\'' +
+                ", balance=" + balance +
+                '}';
     }
 }
