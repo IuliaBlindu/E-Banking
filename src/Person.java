@@ -3,6 +3,7 @@ import java.util.Date;
 
 public abstract class Person implements Serializable {
 
+    private int id;
     private String lastName;
     private String firstName;
     private Gender gender;
@@ -26,8 +27,9 @@ public abstract class Person implements Serializable {
         this.phoneNumber= null;
     }
 
-    public Person(String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP,
+    public Person(int id, String lastName, String firstName, Gender gender, Date dateOfBirth, String CNP,
                   String ID, String address, String email, String phoneNumber) {
+        this.id = id;
         this.lastName = lastName;
         this.firstName = firstName;
         this.gender = gender;
@@ -37,6 +39,15 @@ public abstract class Person implements Serializable {
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getLastName() {

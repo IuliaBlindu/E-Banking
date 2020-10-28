@@ -1,21 +1,23 @@
 import java.io.*;
+import java.sql.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 public class Application implements Serializable {
+    private static final String PASSWORD = "adminadmin";
     public static int i = 0;
     public static User users[] = new User[50];
-    public static BankAccount accounts[] = new BankAccount[50];
+    public static BankAccount accounts[][] = new BankAccount[50][10];
+    public static List<Bank> banks = new ArrayList<Bank>();
+
 
     public static void admin() throws ParseException, FileNotFoundException {
 
         do {
         Scanner scan = new Scanner(System.in);
-        System.out.println("Admin Options: \n1.Add new user \n2.View existing user \n3. Add Bank \n4. See Banks" +
-                "\n5. Add Bank Account \n6. See Bank Account \n7.Exit ");
+        System.out.println("Admin Options: \n 1-> Add new user \n 2-> View existing user \n 3-> Add Bank \n 4-> See Banks" +
+                "\n 5-> Add Bank Account \n 6-> See Bank Account \n 7-> Exit ");
         String adminChoice = scan.nextLine();
 
         switch(adminChoice){
@@ -38,7 +40,7 @@ public class Application implements Serializable {
                 viewBankAccounts();
                 break;
             case "7":
-                save(users);
+                save();
                 System.out.println("Exiting Program...");
                 System.exit(0);
                 break;
@@ -54,6 +56,9 @@ public class Application implements Serializable {
         try(FileInputStream in = new FileInputStream("file.txt");
             ObjectInputStream s = new ObjectInputStream(in)) {
             users = (User[]) s.readObject();
+            banks = (ArrayList<Bank>) s.readObject();
+
+            s.close();
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -65,16 +70,25 @@ public class Application implements Serializable {
                 i++;
                 System.out.println(user);
             }
-
         }
+
+        for(Bank bank : banks){
+            System.out.println(bank);
+        }
+
 
     }
 
-    private static void save(User[] users) {
+    private static void save() {
 
         try(FileOutputStream f = new FileOutputStream("file.txt");
             ObjectOutput s = new ObjectOutputStream(f)) {
             s.writeObject(users);
+            s.writeObject(banks);
+
+            s.flush();
+            s.close();
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,35 +131,59 @@ public class Application implements Serializable {
         System.out.println("Phone Number:");
         String phoneNumber=userScan.nextLine();
 
-        User u = new User(username, password, lastName, firstName, gender, date, CNP, ID,
+        User u = new User( username, password, i, lastName, firstName, gender, date, CNP, ID,
                            address, email, phoneNumber);
 
         users[i]=new User(u);
 
     }
 
+    private static void viewUsers() {
+        for (User user : users) {
+            if(user != null)
+                System.out.println(user);
+        }
+    }
 
     private static void addNewBank() {
+        Scanner userScan = new Scanner(System.in);
+        System.out.println("id:");
+        String id= userScan.nextLine();
+        System.out.println("name:");
+        String name= userScan.nextLine();
+        System.out.println("country:");
+        String country= userScan.nextLine();
+
+        Bank b = new Bank( id, name, country);
+
+        banks.add(b);
+
     }
 
     private static void viewBanks() {
+        for (Bank bank : banks)
+            System.out.println(bank);
     }
 
-
     private static void addNewBankAccount(){
+
+        Scanner userScan = new Scanner(System.in);
+        System.out.println("Choose Bank:");
+        int i = 0;
+        for (Bank bank: banks){
+            System.out.println(i + "->" + bank.getName());
+            i++;
+        }
+        int choice= userScan.nextInt();
+        Bank bank = banks.get(choice);
+        System.out.println(bank);
+
 
     }
 
     private static void viewBankAccounts() {
     }
 
-
-    private static void viewUsers() {
-        for (User user : users) {
-            if(user != null)
-            System.out.println(user.toString());
-        }
-    }
 
     public static void client(){
         Scanner scan = new Scanner(System.in);
@@ -154,23 +192,21 @@ public class Application implements Serializable {
 
     public static void main(String[] args) throws ParseException, FileNotFoundException {
 
-        String PASSWORD = "adminadmin";
+
         Scanner scan = new Scanner(System.in);
 
         //verify if file exists
         load();
 
         while(true) {
-            System.out.println("What is your role? \n 1. Admin \n 2. Client \n 3. Exit");
+            System.out.println("What is your role? \n 1-> Admin \n 2-> Client \n 3-> Exit");
 
             String choice = scan.nextLine();
-
 
             switch (choice) {
                 case "1":
                     System.out.println("Enter password: ");
                     String password = scan.nextLine();
-                    System.out.println(password + PASSWORD);
                     if (password.equals(PASSWORD)) {
                         admin();
                     } else {

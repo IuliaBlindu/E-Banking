@@ -1,4 +1,6 @@
-public class Bank {
+import java.io.Serializable;
+
+public class Bank implements Serializable {
     private String id;
     private String name;
     private String country;
@@ -31,5 +33,14 @@ public class Bank {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    public String toString() {
+        return "Bank{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", country='" + country + '\'' +
+                '}';
     }
 }
