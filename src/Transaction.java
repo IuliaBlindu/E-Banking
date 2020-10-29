@@ -1,16 +1,16 @@
 public class Transaction {
 
     private String id;
-    private String receiverBankAccount;
-    private String senderBankAccount;
+    private String secondAccount;
+    private Type type;
     private Category category;
     private int amount;
     private String details;
 
-    public Transaction(String id, String receiverBankAccount, String senderBankAccount, Category category, int amount, String details) {
+    public Transaction(String id, String secondAccount, Type type, Category category, int amount, String details) {
         this.id = id;
-        this.receiverBankAccount = receiverBankAccount;
-        this.senderBankAccount = senderBankAccount;
+        this.secondAccount = secondAccount;
+        this.type = type;
         this.category = category;
         this.amount = amount;
         this.details = details;
@@ -24,20 +24,20 @@ public class Transaction {
         this.id = id;
     }
 
-    public String getReceiverBankAccount() {
-        return receiverBankAccount;
+    public String getSecondAccount() {
+        return secondAccount;
     }
 
-    public void setReceiverBankAccount(String receiverBankAccount) {
-        this.receiverBankAccount = receiverBankAccount;
+    public void setSecondAccount(String secondAccount) {
+        this.secondAccount = secondAccount;
     }
 
-    public String getSenderBankAccount() {
-        return senderBankAccount;
+    public Type getType() {
+        return type;
     }
 
-    public void setSenderBankAccount(String senderBankAccount) {
-        this.senderBankAccount = senderBankAccount;
+    public void setType(Type type) {
+        this.type = type;
     }
 
     public Category getCategory() {

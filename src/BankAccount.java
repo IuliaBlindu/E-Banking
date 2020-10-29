@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class BankAccount implements Serializable {
     private Bank bank;
@@ -10,6 +11,7 @@ public class BankAccount implements Serializable {
     private Date cardExpiryDate;
     private String CVV;
     private int balance;
+    private List<Transaction> transactions;
 
     public BankAccount(Bank bank, User accountOwner, String accountNumber, String cardNumber,
                        Date cardExpiryDate, String CVV, int balance) {
@@ -20,6 +22,7 @@ public class BankAccount implements Serializable {
         this.cardExpiryDate = cardExpiryDate;
         this.CVV = CVV;
         this.balance = balance;
+        this.transactions = new ArrayList<>();;
     }
 
     public Bank getBank() {
@@ -76,6 +79,18 @@ public class BankAccount implements Serializable {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+
+    public void addTransactions( Transaction transaction) {
+        this.transactions.add(transaction);
     }
 
     @Override
