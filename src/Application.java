@@ -1,10 +1,9 @@
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+
+// create default constructors
 
 public class Application implements Serializable {
 
@@ -13,6 +12,8 @@ public class Application implements Serializable {
     public static User[] users = new User[50];
     public static BankAccount[][] accounts = new BankAccount[50][10];
     public static List<Bank> banks = new ArrayList<>();
+    public static Hashtable<BankAccount, List<Transaction>> transactions =
+            new Hashtable<BankAccount, List<Transaction>>();
 
 
     public static boolean admin() throws ParseException {
@@ -22,30 +23,30 @@ public class Application implements Serializable {
             System.out.println(MyConstants.ADMIN_MENU);
 
             System.out.print(MyConstants.R);
-            int adminChoice = scan.nextInt();
+            String adminChoice = scan.nextLine();
 
             switch(adminChoice){
-                case 1:
+                case "1":
                     addNewUser();
                     break;
-                case 2:
+                case "2":
                     viewUsers();
                     break;
-                case 3:
+                case "3":
                     addNewBank();
                     break;
-                case 4:
+                case "4":
                     viewBanks();
                     break;
-                case 5:
+                case "5":
                     addNewBankAccount();
                     break;
-                case 6:
+                case "6":
                     viewBankAccounts();
                     break;
-                case 7:
+                case "7":
                     return false;
-                case 8:
+                case "8":
                     save();
                     System.out.println(MyConstants.EXIT);
                     System.exit(0);
@@ -98,41 +99,42 @@ public class Application implements Serializable {
 
         System.out.println(MyConstants.ADD_USER);
 
-        Scanner userScan = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         System.out.print(MyConstants.USERNAME);
-        String username= userScan.nextLine();
+        String username= scanner.nextLine();
         System.out.print(MyConstants.PASSWORD);
-        String password= userScan.nextLine();
+        String password= scanner.nextLine();
         System.out.print(MyConstants.LAST_NAME);
-        String lastName= userScan.nextLine();
+        String lastName= scanner.nextLine();
         System.out.print(MyConstants.FIRST_NAME);
-        String firstName= userScan.nextLine();
+        String firstName= scanner.nextLine();
         System.out.println(MyConstants.GENDER);
         System.out.print(MyConstants.R);
-        int sex= userScan.nextInt();
+        int g= scanner.nextInt();
+        scanner.nextLine();
         Gender gender;
-        if(sex == 1){
+        if(g == 1){
             gender = Gender.FEMALE;
         }
-        else if(sex == 2){
+        else if(g == 2){
             gender = Gender.MALE;
         }
         else{
             gender = Gender.UNSPECIFIED;
         }
         System.out.print(MyConstants.BIRTH);
-        String dateScan = userScan.nextLine();
+        String dateScan = scanner.nextLine();
         Date date = new SimpleDateFormat(MyConstants.PATTERN).parse(dateScan);
         System.out.print(MyConstants.CNP);
-        String CNP= userScan.nextLine();
+        String CNP= scanner.nextLine();
         System.out.print(MyConstants.IDSN);
-        String ID= userScan.nextLine();
+        String ID= scanner.nextLine();
         System.out.print(MyConstants.ADDRESS);
-        String address= userScan.nextLine();
+        String address= scanner.nextLine();
         System.out.print(MyConstants.EMAIL);
-        String email= userScan.nextLine();
+        String email= scanner.nextLine();
         System.out.print(MyConstants.PHONE);
-        String phoneNumber=userScan.nextLine();
+        String phoneNumber=scanner.nextLine();
 
         User u = new User( username, password, i, lastName, firstName, gender, date, CNP, ID,
                            address, email, phoneNumber);
@@ -157,13 +159,13 @@ public class Application implements Serializable {
 
         System.out.println(MyConstants.ADD_BANK);
 
-        Scanner userScan = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         System.out.print(MyConstants.ID);
-        String id= userScan.nextLine();
+        String id= scanner.nextLine();
         System.out.print(MyConstants.NAME);
-        String name= userScan.nextLine();
+        String name= scanner.nextLine();
         System.out.print(MyConstants.COUNTRY);
-        String country= userScan.nextLine();
+        String country= scanner.nextLine();
 
         Bank b = new Bank( id, name, country);
 
@@ -180,61 +182,83 @@ public class Application implements Serializable {
     }
 
 
-    private static void addNewBankAccount() throws ParseException {
+    private static boolean addNewBankAccount() throws ParseException {
 
-        System.out.println("\n-------------------------\nAdd Bank Account\n-------------------------");
+        System.out.println(MyConstants.ADD_BANK_ACCOUNT);
 
-        Scanner userScan = new Scanner(System.in);
-        System.out.println("Choose Bank:");
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(MyConstants.CHOOSE_BANK);
         int iterator = 0;
         for (Bank bank: banks){
             System.out.println(" "+ iterator + "->" + bank.getName());
             iterator++;
         }
-        System.out.print("R:");
-        int choice= userScan.nextInt();
+        System.out.print(MyConstants.R);
+        int choice= scanner.nextInt();
+        scanner.nextLine();
         Bank bank = banks.get(choice);
-        System.out.println(bank);
-        System.out.println("Introduce the id: \n 1-> Introduce id \n 2-> See list of users");
-        System.out.print("R:");
-        choice = userScan.nextInt();
+        System.out.println(MyConstants.ADD_USER_OPTIONS);
+        System.out.print(MyConstants.R);
+        choice = scanner.nextInt();
+        scanner.nextLine();
         int id = 0;
         User accountOwner = new User();
         switch (choice){
             case 1:
-                System.out.print("Introduce id:");
-                id = userScan.nextInt();
+                System.out.print(MyConstants.ID);
+                id = scanner.nextInt();
+                scanner.nextLine();
                 accountOwner = new User(users[id]);
                 break;
             case 2:
-                System.out.println("Choose from the list:");
+                System.out.println(MyConstants.CHOICES);
                 iterator = 0;
                 for (User u: users)
                     if(u!=null) {
                         System.out.println(iterator + "-> " + u.getUsername());
                         iterator++;
                     }
-                System.out.print("R:");
-                id = userScan.nextInt();
+                System.out.print(MyConstants.R);
+                id = scanner.nextInt();
+                scanner.nextLine();
                 accountOwner = new User(users[id]);
                 break;
             default:
-                System.out.println("Not a valid option!");
+                System.out.println(MyConstants.INVALID_OPTION);
                 break;
         }
-        System.out.print(" Account Number:");
-        String accountNumber= userScan.nextLine();
-        System.out.print(" Card Number:");
-        String cardNumber= userScan.nextLine();
-        System.out.print(" Expiry date(dd/mm/yyyy):");
-        String dateScan= userScan.nextLine();
-        Date cardExpiryDate = new SimpleDateFormat("dd/MM/yyyy").parse(dateScan);
-        System.out.print(" CVV:");
-        String CVV= userScan.nextLine();
-        System.out.print(" Initial balance:");
-        int balance= userScan.nextInt();
+        System.out.print(MyConstants.ACCOUNT_NUMBER);
+        String accountNumber= scanner.nextLine();
+        System.out.print(MyConstants.CARD_NUMBER);
+        String cardNumber= scanner.nextLine();
+        System.out.print(MyConstants.EXPIRY_DATE);
+        String dateScan= scanner.nextLine();
+        Date cardExpiryDate = new SimpleDateFormat(MyConstants.PATTERN).parse(dateScan);
+        System.out.print(MyConstants.CVV);
+        String CVV= scanner.nextLine();
+        System.out.print(MyConstants.CURRENCY);
+        System.out.print(MyConstants.R);
+        int c= scanner.nextInt();
+        scanner.nextLine();
+        Currency currency;
+        if(c == 1){
+            currency = Currency.RON;
+        }
+        else if(c == 2){
+            currency = Currency.EUR;
+        }
+        else if(c == 3){
+            currency = Currency.GBP;
+        }
+        else if(c == 4){
+            currency = Currency.USD;
+        }
+        else {
+            System.out.println(MyConstants.INVALID_OPTION);
+            return false;
+        }
 
-        BankAccount ba = new BankAccount(bank,accountOwner,accountNumber,cardNumber,cardExpiryDate,CVV, balance);
+        BankAccount ba = new BankAccount(bank,accountOwner,accountNumber,cardNumber,cardExpiryDate,CVV, 0, currency);
 
         for(iterator = 0; iterator<accounts[id].length; iterator ++){
             if(accounts[id][iterator] == null) {
@@ -242,12 +266,13 @@ public class Application implements Serializable {
                 break;
             }
         }
+        return true;
     }
 
 
     private static void viewBankAccounts() {
 
-        System.out.println("\n-------------------------\nView Bank Accounts\n-------------------------");
+        System.out.println(MyConstants.VIEW_ACCOUNTS);
 
         for (int i = 0; i<accounts.length; i++)
             for (int j = 0; j<accounts[0].length; j++){
@@ -281,33 +306,33 @@ public class Application implements Serializable {
                     System.out.println(MyConstants.CLIENT_MENU);
 
                     System.out.print(MyConstants.R);
-                    int clientChoice = scan.nextInt();
+                    String clientChoice = scan.nextLine();
 
                     switch(clientChoice){
-                        case 1:
+                        case "1":
                             seeBalance();
                             break;
-                        case 2:
+                        case "2":
                             addTransaction();
                             break;
-                        case 3:
+                        case "3":
                             seeTransaction();
                             break;
-                        case 4:
+                        case "4":
                             addMoney();
                             break;
-                        case 5:
+                        case "5":
                             withdrawMoney();
                             break;
-                        case 6:
+                        case "6":
                             createAccount();
                             break;
-                        case 7:
+                        case "7":
                             seeStatistics();
                             break;
-                        case 8:
+                        case "8":
                             return false;
-                        case 9:
+                        case "9":
                             save();
                             System.out.println(MyConstants.EXIT);
                             System.exit(0);
@@ -319,10 +344,10 @@ public class Application implements Serializable {
                 }while (true);
             }
             else{
-                System.out.println("\nIncorrect password!");
+                System.out.println(MyConstants.WRONG_PASSWORD);
             };
         }
-        else System.out.println("\nUser does not exist!");
+        else System.out.println(MyConstants.NO_USER);
         return false;
     }
 
@@ -364,22 +389,20 @@ public class Application implements Serializable {
         load();
 
         while(true) {
-            System.out.println("-------------------------");
-            System.out.println("------- E-BANKING -------");
-            System.out.println("-------------------------");
-            System.out.println("\nWhat is your role? \n 1-> Admin \n 2-> Client \n 3-> Exit");
+            System.out.println(MyConstants.E_BANKING);
+            System.out.println(MyConstants.MAIN_MENU);
 
-            System.out.print("\nR:");
+            System.out.print(MyConstants.R);
             String choice = scan.nextLine();
 
             switch (choice) {
                 case "1":
-                    System.out.print("Enter password: ");
+                    System.out.print(MyConstants.PASSWORD);
                     String password = scan.nextLine();
                     if (password.equals(MyConstants.ADMIN_PASSWORD)) {
                         admin();
                     } else {
-                        System.out.println("Wrong Password!!");
+                        System.out.println(MyConstants.WRONG_PASSWORD);
                     }
                     break;
                 case "2":
@@ -387,12 +410,11 @@ public class Application implements Serializable {
                     break;
                 case "3":
                     save();
-                    System.out.println("\nSaving Changes...");
-                    System.out.println("Exiting Program...");
+                    System.out.println(MyConstants.EXIT);
                     System.exit(0);
                     break;
                 default :
-                    System.out.println("This is not a valid Menu Option! Please Select Another");
+                    System.out.println(MyConstants.INVALID_OPTION);
                     break;
 
             }

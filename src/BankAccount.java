@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+
 public class BankAccount implements Serializable {
     private Bank bank;
     private User accountOwner;
@@ -11,10 +12,11 @@ public class BankAccount implements Serializable {
     private Date cardExpiryDate;
     private String CVV;
     private int balance;
+    private Currency currency;
     private List<Transaction> transactions;
 
     public BankAccount(Bank bank, User accountOwner, String accountNumber, String cardNumber,
-                       Date cardExpiryDate, String CVV, int balance) {
+                       Date cardExpiryDate, String CVV, int balance, Currency currency) {
         this.bank = bank;
         this.accountOwner = accountOwner;
         this.accountNumber = accountNumber;
@@ -22,7 +24,21 @@ public class BankAccount implements Serializable {
         this.cardExpiryDate = cardExpiryDate;
         this.CVV = CVV;
         this.balance = balance;
+        this.currency = currency;
         this.transactions = new ArrayList<>();;
+    }
+
+    public BankAccount(Bank bank, User accountOwner, String accountNumber, String cardNumber, Date cardExpiryDate,
+                       String CVV, int balance, Currency currency, List<Transaction> transactions) {
+        this.bank = bank;
+        this.accountOwner = accountOwner;
+        this.accountNumber = accountNumber;
+        this.cardNumber = cardNumber;
+        this.cardExpiryDate = cardExpiryDate;
+        this.CVV = CVV;
+        this.balance = balance;
+        this.currency = currency;
+        this.transactions = transactions;
     }
 
     public Bank getBank() {
@@ -71,6 +87,14 @@ public class BankAccount implements Serializable {
 
     public void setCVV(String CVV) {
         this.CVV = CVV;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
     public int getBalance() {
