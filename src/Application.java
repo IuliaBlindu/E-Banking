@@ -2,7 +2,7 @@ import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-
+import java.text.DecimalFormat;
 // create default constructors
 // exceptions
 
@@ -16,6 +16,8 @@ public class Application implements Serializable {
     public static List<Bank> banks = new ArrayList<>();
     public static Hashtable<BankAccount, List<Transaction>> transactions =
             new Hashtable<>();
+
+    private static DecimalFormat df2 = new DecimalFormat("#.##");
 
 
     private static void load() {
@@ -124,7 +126,7 @@ public class Application implements Serializable {
                     viewBanks();
                     break;
                 case "5":
-                    addNewBankAccount();
+                    addNewBankAccount("admin");
                     break;
                 case "6":
                     viewBankAccounts();
@@ -147,6 +149,71 @@ public class Application implements Serializable {
                     break;
             }
         }while (true);
+    }
+
+
+    public static void client() throws ParseException {
+        Scanner scan = new Scanner(System.in);
+        boolean correctUser = false;
+        String correctPassword = null;
+        int id = 0;
+        System.out.print(MyConstants.USERNAME);
+        String username = scan.nextLine();
+        for(int i=0; i<users.length; i++){
+            if(users[i] != null && users[i] .getUsername().equals(username)) {
+                correctUser = true;
+                id = i;
+                correctPassword = users[i] .getPassword();
+            }
+        }
+        if(correctUser){
+            System.out.print(MyConstants.PASSWORD);
+            String password = scan.nextLine();
+            if(password.equals(correctPassword)){
+                currentUserId=id;
+                do {
+                    System.out.println(MyConstants.CLIENT_MENU);
+
+                    System.out.print(MyConstants.R);
+                    String clientChoice = scan.nextLine();
+
+                    switch(clientChoice){
+                        case "1":
+                            seeTransactions();
+                            break;
+                        case "2":
+                            addTransaction();
+                            break;
+                        case "3":
+                            changeBalance("add");
+                            break;
+                        case "4":
+                            changeBalance("withdraw");
+                            break;
+                        case "5":
+                            addNewBankAccount("client");
+                            break;
+                        case "6":
+                            seeStatistics();
+                            break;
+                        case "7":
+                            return;
+                        case "8":
+                            save();
+                            System.out.println(MyConstants.EXIT);
+                            System.exit(0);
+                            break;
+                        default :
+                            System.out.println(MyConstants.INVALID_OPTION);
+                            break;
+                    }
+                }while (true);
+            }
+            else{
+                System.out.println(MyConstants.WRONG_PASSWORD);
+            }
+        }
+        else System.out.println(MyConstants.NO_USER);
     }
 
 
@@ -236,11 +303,13 @@ public class Application implements Serializable {
             System.out.println(bank);
     }
 
-    private static void addNewBankAccount() throws ParseException {
+
+    private static void addNewBankAccount(String role) throws ParseException {
 
         System.out.println(MyConstants.ADD_BANK_ACCOUNT);
 
         Scanner scanner = new Scanner(System.in);
+
         System.out.println(MyConstants.CHOOSE_BANK);
         int iterator = 0;
         for (Bank bank: banks){
@@ -251,47 +320,47 @@ public class Application implements Serializable {
         int choice= scanner.nextInt();
         scanner.nextLine();
         Bank bank = banks.get(choice);
-        System.out.println(MyConstants.ADD_USER_OPTIONS);
-        System.out.print(MyConstants.R);
-        choice = scanner.nextInt();
-        scanner.nextLine();
-        int id = 0;
+
         User accountOwner = new User();
-        switch (choice){
-            case 1:
-                System.out.print(MyConstants.ID);
-                id = scanner.nextInt();
-                scanner.nextLine();
-                accountOwner = new User(users[id]);
-                break;
-            case 2:
-                System.out.println(MyConstants.CHOICES);
-                iterator = 0;
-                for (User u: users)
-                    if(u!=null) {
-                        System.out.println(iterator + "-> " + u.getUsername());
-                        iterator++;
-                    }
-                System.out.print(MyConstants.R);
-                id = scanner.nextInt();
-                scanner.nextLine();
-                accountOwner = new User(users[id]);
-                break;
-            default:
-                System.out.println(MyConstants.INVALID_OPTION);
-                break;
+        int id = 0;
+        if(role.equals("admin")){
+            System.out.println(MyConstants.ADD_USER_OPTIONS);
+            System.out.print(MyConstants.R);
+            choice = scanner.nextInt();
+            scanner.nextLine();
+            switch (choice){
+                case 1:
+                    System.out.print(MyConstants.ID);
+                    id = scanner.nextInt();
+                    scanner.nextLine();
+                    accountOwner = new User(users[id]);
+                    break;
+                case 2:
+                    System.out.println(MyConstants.CHOICES);
+                    iterator = 0;
+                    for (User u: users)
+                        if(u!=null) {
+                            System.out.println(iterator + "-> " + u.getUsername());
+                            iterator++;
+                        }
+                    System.out.print(MyConstants.R);
+                    id = scanner.nextInt();
+                    scanner.nextLine();
+                    accountOwner = new User(users[id]);
+                    break;
+                default:
+                    System.out.println(MyConstants.INVALID_OPTION);
+                    break;
+            }
         }
-        System.out.print(MyConstants.ACCOUNT_NUMBER);
-        String accountNumber= scanner.nextLine();
+        else {
+            accountOwner =  new User(users[currentUserId]);
+            id = currentUserId;
+        }
+
         System.out.print(MyConstants.ACCOUNT_NAME);
         String accountName= scanner.nextLine();
-        System.out.print(MyConstants.CARD_NUMBER);
-        String cardNumber= scanner.nextLine();
-        System.out.print(MyConstants.EXPIRY_DATE);
-        String dateScan= scanner.nextLine();
-        Date cardExpiryDate = new SimpleDateFormat(MyConstants.PATTERN).parse(dateScan);
-        System.out.print(MyConstants.CVV);
-        String CVV= scanner.nextLine();
+
         System.out.println(MyConstants.CURRENCY);
         System.out.print(MyConstants.R);
         String c= scanner.nextLine();
@@ -308,9 +377,22 @@ public class Application implements Serializable {
             }
         } while ( currency == null);
 
-        System.out.println(MyConstants.INITIAL_BALANCE);
-        double balance = scanner.nextDouble();
-        scanner.nextLine();
+        double balance = 0;
+        if(role.equals("admin")) {
+            System.out.println(MyConstants.INITIAL_BALANCE);
+            balance = scanner.nextDouble();
+            scanner.nextLine();
+        }
+
+        String accountNumber = generateRandomDigits(10);
+        String cardNumber = generateRandomDigits(10);
+        String CVV = generateRandomDigits(3);
+
+        Date date = new Date(System.currentTimeMillis());
+        Calendar cDate = Calendar.getInstance();
+        cDate.setTime(date);
+        cDate.add(Calendar.YEAR, 4);
+        Date cardExpiryDate = cDate.getTime();
 
         BankAccount ba = new BankAccount(bank,accountOwner, accountName, accountNumber,cardNumber,cardExpiryDate,CVV, balance, currency);
 
@@ -320,6 +402,9 @@ public class Application implements Serializable {
                 break;
             }
         }
+
+        List<Transaction> transaction = new ArrayList<>();
+        transactions.put(ba,transaction);
     }
 
 
@@ -398,75 +483,25 @@ public class Application implements Serializable {
     }
 
 
-    public static void client(){
-        Scanner scan = new Scanner(System.in);
-        boolean correctUser = false;
-        String correctPassword = null;
-        int id = 0;
-        System.out.print(MyConstants.USERNAME);
-        String username = scan.nextLine();
-        for(int i=0; i<users.length; i++){
-            if(users[i] != null && users[i] .getUsername().equals(username)) {
-                correctUser = true;
-                id = i;
-                correctPassword = users[i] .getPassword();
+    private static void seeTransactions() {
+        System.out.println(MyConstants.SEE_TRANSACTIONS);
+        Set<BankAccount> bankAccounts = transactions.keySet();
+        for(BankAccount ba: bankAccounts){
+            System.out.println(MyConstants.SEPARATOR);
+            if(ba.getAccountOwner().getUsername().equals(users[currentUserId].getUsername()))
+                System.out.println(ba.getAccountNumber() + " - " + ba.getName() + ": " + df2.format(ba.getBalance()) + " " +
+                        ba.getCurrency());
+            for(Transaction t:transactions.get(ba))
+            {
+                if(t.getType().equals(Type.SEND)){
+                    System.out.println(MyConstants.RED + "---"+ t + MyConstants.RESET);
+                }
+                else{
+                    System.out.println(MyConstants.BLUE+ "---"+ t + MyConstants.RESET);
+                }
+
             }
         }
-        if(correctUser){
-            System.out.print(MyConstants.PASSWORD);
-            String password = scan.nextLine();
-            if(password.equals(correctPassword)){
-                currentUserId=id;
-                do {
-                    System.out.println(MyConstants.CLIENT_MENU);
-
-                    System.out.print(MyConstants.R);
-                    String clientChoice = scan.nextLine();
-
-                    switch(clientChoice){
-                        case "1":
-                            seeBalance();
-                            break;
-                        case "2":
-                            addTransaction();
-                            break;
-                        case "3":
-                            seeTransactions();
-                            break;
-                        case "4":
-                            addMoney();
-                            break;
-                        case "5":
-                            withdrawMoney();
-                            break;
-                        case "6":
-                            createAccount();
-                            break;
-                        case "7":
-                            seeStatistics();
-                            break;
-                        case "8":
-                            return;
-                        case "9":
-                            save();
-                            System.out.println(MyConstants.EXIT);
-                            System.exit(0);
-                            break;
-                        default :
-                            System.out.println(MyConstants.INVALID_OPTION);
-                            break;
-                    }
-                }while (true);
-            }
-            else{
-                System.out.println(MyConstants.WRONG_PASSWORD);
-            }
-        }
-        else System.out.println(MyConstants.NO_USER);
-    }
-
-
-    private static void seeBalance() {
     }
 
 
@@ -498,7 +533,7 @@ public class Application implements Serializable {
             if(accounts[currentUserId][iterator] != null){
                 System.out.println(" " + iterator + "-> " + accounts[currentUserId][iterator].getName() + " - " +
                         accounts[currentUserId][iterator].getAccountNumber() + ": " +
-                        accounts[currentUserId][iterator].getBalance() + accounts[currentUserId][iterator].getCurrency());
+                        df2.format(accounts[currentUserId][iterator].getBalance()) + " " + accounts[currentUserId][iterator].getCurrency());
             }
         }
         System.out.print(MyConstants.R);
@@ -595,8 +630,8 @@ public class Application implements Serializable {
                 receiverJ = myA;
                 senderI = otherI;
                 senderJ = otherJ;
-                receiver = myAccount;
-                sender = otherAccount;
+                receiver = new BankAccount(myAccount);
+                sender = new BankAccount(otherAccount);
                 receivedAmount = amount;
                 sentAmount = sender.convert(amount,receiver.getCurrency());
                 System.out.println("SENT AMOUNT: " + sentAmount);
@@ -606,14 +641,30 @@ public class Application implements Serializable {
                 receiverJ = otherJ;
                 senderI = currentUserId;
                 senderJ = myA;
-                receiver = otherAccount;
-                sender = myAccount;
+                receiver = new BankAccount(otherAccount);
+                sender = new BankAccount(myAccount);
                 sentAmount = amount;
                 receivedAmount = receiver.convert(amount,sender.getCurrency());
-                System.out.println("RECEIVED AMOUNT: " + receivedAmount);
             }
 
             ok = sender.verifyBalance(sentAmount);
+
+            Set<BankAccount> bankAccountsS = transactions.keySet();
+            BankAccount senderBA = null;
+            BankAccount receiverBA = null;
+            for(BankAccount ba: bankAccountsS)
+            {
+                if(ba.getAccountNumber().equals(sender.getAccountNumber())){
+                    senderTransactions = transactions.get(ba);
+                    senderBA = ba;
+                }
+                else if(ba.getAccountNumber().equals(receiver.getAccountNumber())){
+                    receiverTransactions = transactions.get(ba);
+                    receiverBA = ba;
+                }
+            }
+            transactions.remove(senderBA);
+            transactions.remove(receiverBA);
 
             if(ok){
                 tryAgain = "0";
@@ -624,17 +675,9 @@ public class Application implements Serializable {
                 receiverTransaction = new Transaction(secondAccount, type.RECEIVE, category, receivedAmount, details);
                 senderTransaction = new Transaction(myAccount.getAccountNumber(), Type.SEND, category, sentAmount, details);
 
-                if(transactions.containsKey(receiver)){
-                    receiverTransactions = transactions.get(receiver);
-                    transactions.remove(receiver);
-                }
                 receiverTransactions.add(receiverTransaction);
                 transactions.put(accounts[receiverI][receiverJ],receiverTransactions);
 
-                if(transactions.containsKey(sender)){
-                    senderTransactions = transactions.get(sender);
-                    transactions.remove(sender);
-                }
                 senderTransactions.add(senderTransaction);
                 transactions.put(accounts[senderI][senderJ],senderTransactions);
             }
@@ -652,42 +695,84 @@ public class Application implements Serializable {
     }
 
 
-    private static void seeTransactions() {
-        System.out.println(MyConstants.SEE_TRANSACTIONS);
-        Set<BankAccount> bankAccounts = transactions.keySet();
-        for(BankAccount ba: bankAccounts){
-            if(ba.getAccountOwner().getUsername().equals(users[currentUserId].getUsername()))
-                System.out.println(ba.getAccountNumber() + " - " + ba.getName() + ": " + ba.getBalance() + " " +
-                        ba.getCurrency());
-                for(Transaction t:transactions.get(ba))
-                {
-                    if(t.getType().equals(Type.SEND)){
-                        System.out.println(MyConstants.RED + "---"+ t + MyConstants.RESET);
-                    }
-                    else{
-                        System.out.println(MyConstants.GREEN+ "---"+ t + MyConstants.RESET);
-                    }
+    private static void changeBalance(String method) {
 
-                }
+        Scanner scanner = new Scanner(System.in);
+        if (method.equals("add")){
+            System.out.println(MyConstants.ADD_MONEY);
         }
-    }
+        else {
+            System.out.println(MyConstants.WITHDRAW_MONEY);
+        }
+        System.out.println(MyConstants.CHOOSE_YOUR_ACCOUNT);
+        for (int iterator = 0; iterator < accounts[currentUserId].length; iterator ++){
+            if(accounts[currentUserId][iterator] != null){
+                System.out.println(" " + iterator + "-> " + accounts[currentUserId][iterator].getName() + " - " +
+                        accounts[currentUserId][iterator].getAccountNumber() + ": " +
+                        df2.format(accounts[currentUserId][iterator].getBalance())  + " " + accounts[currentUserId][iterator].getCurrency());
+            }
+        }
+        System.out.print(MyConstants.R);
+        int myA = scanner.nextInt();
+        scanner.nextLine();
+        BankAccount myAccount = new BankAccount(accounts[currentUserId][myA]);
 
+        System.out.print(MyConstants.AMOUNT);
+        double amount = scanner.nextDouble();
+        scanner.nextLine();
+        Transaction transaction;
+        List<Transaction> transactionsList = new ArrayList<>();
 
-    private static void addMoney() {
-    }
+        Set<BankAccount> bankAccounts = transactions.keySet();
+        for(BankAccount ba: bankAccounts)
+        {
+            if(ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())){
+                transactionsList = transactions.get(ba);
+                transactions.remove(ba);
+            }
+        }
 
+        if(method.equals("add")){
+            accounts[currentUserId][myA].changeBalance(amount,Type.RECEIVE);
+            transaction = new Transaction("-",Type.RECEIVE,Category.OTHER,amount,"");
+            transactionsList.add(transaction);
+            transactions.put(accounts[currentUserId][myA],transactionsList);
+        }
+        else {
+            String tryAgain = "1";
+            do {
+                boolean ok = accounts[currentUserId][myA].verifyBalance(amount);
 
-    private static void withdrawMoney() {
-    }
+               if(ok) {
+                   accounts[currentUserId][myA].changeBalance(amount,Type.SEND);
+                   transaction = new Transaction("-",Type.SEND,Category.OTHER,amount,"");
+                   transactionsList.add(transaction);
+                   transactions.put(accounts[currentUserId][myA],transactionsList);
+               }
+               else{
+                   System.out.println(MyConstants.TRY_AGAIN);
+                   tryAgain = scanner.nextLine();
+                   if(tryAgain.equals("1")){
+                       System.out.println(MyConstants.AMOUNT);
+                       amount = scanner.nextDouble();
+                       scanner.nextLine();
+                   }
+               }
+            }while(tryAgain.equals("1"));
 
-
-    private static void createAccount() {
+        }
     }
 
 
     private static void seeStatistics() {
     }
 
+    public static String generateRandomDigits(int n) {
+
+        int m = (int) Math.pow(10, n - 1);
+        int result =  m + new Random().nextInt(9 * m);
+        return String.valueOf(result);
+    }
 
     public static void main(String[] args) throws ParseException {
 

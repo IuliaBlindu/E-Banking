@@ -56,6 +56,19 @@ public class BankAccount implements Serializable {
         this.transactions = transactions;
     }
 
+    public BankAccount(BankAccount account) {
+        this.bank = account.bank;
+        this.accountOwner = account.accountOwner;
+        this.name = account.name;
+        this.accountNumber = account.accountNumber;
+        this.cardNumber = account.cardNumber;
+        this.cardExpiryDate = account.cardExpiryDate;
+        this.CVV = account.CVV;
+        this.balance = account.balance;
+        this.currency = account.currency;
+        this.transactions = account.transactions;
+    }
+
     public Bank getBank() {
         return bank;
     }
