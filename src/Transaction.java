@@ -1,14 +1,22 @@
-public class Transaction {
+import java.io.Serializable;
 
-    private String id;
+public class Transaction implements Serializable {
+
     private String secondAccount;
     private Type type;
     private Category category;
-    private int amount;
+    private double amount;
     private String details;
 
-    public Transaction(String id, String secondAccount, Type type, Category category, int amount, String details) {
-        this.id = id;
+    public Transaction (){
+        this.secondAccount = null;
+        this.type = null;
+        this.category = null;
+        this.amount = 0;
+        this.details = null;
+    }
+
+    public Transaction(String secondAccount, Type type, Category category, double amount, String details) {
         this.secondAccount = secondAccount;
         this.type = type;
         this.category = category;
@@ -16,13 +24,6 @@ public class Transaction {
         this.details = details;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getSecondAccount() {
         return secondAccount;
@@ -48,11 +49,11 @@ public class Transaction {
         this.category = category;
     }
 
-    public int getAmount() {
+    public double getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    public void setAmount(double amount) {
         this.amount = amount;
     }
 
@@ -62,5 +63,10 @@ public class Transaction {
 
     public void setDetails(String details) {
         this.details = details;
+    }
+
+    @Override
+    public String toString() {
+        return secondAccount + " - " + amount + " Details:" + details;
     }
 }

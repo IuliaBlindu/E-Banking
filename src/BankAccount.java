@@ -7,18 +7,32 @@ import java.util.List;
 public class BankAccount implements Serializable {
     private Bank bank;
     private User accountOwner;
+    private String name;
     private String accountNumber;
     private String cardNumber;
     private Date cardExpiryDate;
     private String CVV;
-    private int balance;
+    private double balance;
     private Currency currency;
     private List<Transaction> transactions;
 
-    public BankAccount(Bank bank, User accountOwner, String accountNumber, String cardNumber,
-                       Date cardExpiryDate, String CVV, int balance, Currency currency) {
+    public BankAccount(){
+        this.bank = null;
+        this.accountOwner = null;
+        this.name = null;
+        this.accountNumber = null;
+        this.cardNumber = null;
+        this.cardExpiryDate = null;
+        this.CVV = null;
+        this.balance = 0;
+        this.currency = null;
+        this.transactions = new ArrayList<>();;
+    }
+    public BankAccount(Bank bank, User accountOwner, String name, String accountNumber, String cardNumber,
+                       Date cardExpiryDate, String CVV, double balance, Currency currency) {
         this.bank = bank;
         this.accountOwner = accountOwner;
+        this.name = name;
         this.accountNumber = accountNumber;
         this.cardNumber = cardNumber;
         this.cardExpiryDate = cardExpiryDate;
@@ -28,10 +42,11 @@ public class BankAccount implements Serializable {
         this.transactions = new ArrayList<>();;
     }
 
-    public BankAccount(Bank bank, User accountOwner, String accountNumber, String cardNumber, Date cardExpiryDate,
-                       String CVV, int balance, Currency currency, List<Transaction> transactions) {
+    public BankAccount(Bank bank, User accountOwner, String name, String accountNumber, String cardNumber, Date cardExpiryDate,
+                       String CVV, double balance, Currency currency, List<Transaction> transactions) {
         this.bank = bank;
         this.accountOwner = accountOwner;
+        this.name = name;
         this.accountNumber = accountNumber;
         this.cardNumber = cardNumber;
         this.cardExpiryDate = cardExpiryDate;
@@ -65,6 +80,10 @@ public class BankAccount implements Serializable {
         this.accountNumber = accountNumber;
     }
 
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
+
     public String getCardNumber() {
         return cardNumber;
     }
@@ -97,11 +116,11 @@ public class BankAccount implements Serializable {
         this.currency = currency;
     }
 
-    public int getBalance() {
+    public double getBalance() {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 
@@ -117,16 +136,64 @@ public class BankAccount implements Serializable {
         this.transactions.add(transaction);
     }
 
+    public double currency(Currency c){
+        if(c == currency.RON){
+            return MyConstants.RON;
+        }
+        else if (c == currency.EUR){
+            return MyConstants.EUR;
+        }
+        else {
+            return MyConstants.USD;
+        }
+    }
+
+    public double convert (double amount, Currency c){
+        double multiply = currency(c);
+        double divide = currency(this.currency);
+
+        amount = amount*multiply/divide;
+
+        return amount;
+    }
+
+
+    public boolean verifyBalance (double amount){
+
+        if (amount>this.balance){
+            System.out.println(MyConstants.INSUFFICIENT_BALANCE);
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    public void changeBalance(double amount, Type t){
+
+        if (t == Type.RECEIVE) {
+            this.balance = this.balance + amount;
+        }
+        else {
+            this.balance = this.balance - amount;
+        }
+    }
+
+
     @Override
     public String toString() {
         return "BankAccount{" +
                 "bank=" + bank +
-                ", accountOwner=" + accountOwner +
+                ", accountOwner=" + accountOwner.getUsername() +
+                ", name='" + name + '\'' +
                 ", accountNumber='" + accountNumber + '\'' +
                 ", cardNumber='" + cardNumber + '\'' +
                 ", cardExpiryDate=" + cardExpiryDate +
                 ", CVV='" + CVV + '\'' +
                 ", balance=" + balance +
+                ", currency=" + currency +
+                ", transactions=" + transactions +
                 '}';
     }
 }

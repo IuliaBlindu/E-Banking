@@ -1,6 +1,6 @@
 public enum Category {
-    TRANSFER,
     BILLS,
+    GROCERIES,
     SHOPPING,
     TRANSPORT,
     HEALTH,
