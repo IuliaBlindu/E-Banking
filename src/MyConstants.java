@@ -14,7 +14,7 @@ public final class MyConstants {
 
     public static final String CLIENT_MENU = "\n-------------------------\nUser Options: \n 1-> See Balances and Transactions" +
                                              "\n 2-> Add Transaction \n 3-> Add Money \n 4-> Withdraw Money \n 5-> Create Account \n " +
-                                             "6-> See Statistics \n 7-> Exit to Main Menu \n 8-> Exit Application\n------------------------- ";
+                                             "6-> Exit to Main Menu \n 7-> Exit Application\n------------------------- ";
 
     public static final String MAIN_MENU = "\nWhat is your role? \n 1-> Admin \n 2-> Client \n 3-> Exit";
     public static final String ADMIN_PASSWORD = "adminadmin";
@@ -77,7 +77,7 @@ public final class MyConstants {
 
     public static final String R= "R:";
     public static final String EXIT = "\nSaving Changes...\nExiting Application";
-    public static final String INVALID_OPTION = "\n This is not a valid option!";
+    public static final String INVALID_OPTION = "This is not a valid option!";
     public static final String TRY_AGAIN = "Try Again? \n 0-> NO \n 1-> YES";
 
     public static final String RED = "\033[0;31m";
@@ -85,4 +85,15 @@ public final class MyConstants {
     public static final String RESET = "\033[0m";
 
     public static final String SEPARATOR = "----------------------------------------------------------------------";
+
+    public static final String IO_EXCEPTION = "FILE NOT FOUND! NO RECORDS! ";
+    public static final String CLASS_NOT_FOUND_EXCEPTION = "FILE NOT FOUND: ";
+    public static final String WRONG_INPUT = "WRONG INPUT! TRY AGAIN!";
+    public static final String CLASS_CAST_EXCEPTION = "FILE DOES NOT CONTAIN THE REQUIRED CLASS: ";
+    public static final String USER_EXISTS = "User already exists!";
+    public static final String USER_NOT_EXIST = "User does not exist!";
+    public static final String INCORRECT_DATE = "Incorrect date format!";
+    public static final String ID_EXISTS = "Id already exists!";
+    public static final String BANK_EXISTS = "Bank already exists!";
+
 }
