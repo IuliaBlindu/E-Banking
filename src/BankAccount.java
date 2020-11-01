@@ -196,17 +196,14 @@ public class BankAccount implements Serializable {
 
     @Override
     public String toString() {
-        return "BankAccount{" +
-                "bank=" + bank +
-                ", accountOwner=" + accountOwner.getUsername() +
-                ", name='" + name + '\'' +
-                ", accountNumber='" + accountNumber + '\'' +
-                ", cardNumber='" + cardNumber + '\'' +
-                ", cardExpiryDate=" + cardExpiryDate +
-                ", CVV='" + CVV + '\'' +
-                ", balance=" + balance +
-                ", currency=" + currency +
-                ", transactions=" + transactions +
-                '}';
+        return  "bank:" + bank.getName() +
+                ", accountOwner:" + accountOwner.getUsername() +
+                ", name:" + name +
+                ", accountNumber:" + accountNumber +
+                ", cardNumber:" + cardNumber +
+                ", cardExpiryDate:" + cardExpiryDate +
+                ", CVV:" + CVV  +
+                ", balance:" + balance +
+                ", currency:" + currency;
     }
 }

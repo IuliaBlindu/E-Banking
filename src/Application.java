@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.text.DecimalFormat;
 
+// comments
+// custom exception
+
 public class Application implements Serializable {
 
     public static int i = 0;
@@ -177,6 +180,7 @@ public class Application implements Serializable {
             String password = scan.nextLine();
             if(password.equals(correctPassword)){
                 currentUserId=id;
+                users[currentUserId].welcome(username);
                 do {
                     System.out.println(MyConstants.CLIENT_MENU);
 
@@ -296,10 +300,11 @@ public class Application implements Serializable {
     private static void viewUsers() {
 
         System.out.println(MyConstants.VIEW_USER);
-
         for (User user : users) {
-            if(user != null)
+            if(user != null){
                 System.out.println(user);
+            }
+
         }
     }
 
@@ -483,11 +488,13 @@ public class Application implements Serializable {
         System.out.print(MyConstants.ACCOUNT_NAME);
         String accountName= scanner.nextLine();
 
-        System.out.println(MyConstants.CURRENCY);
-        System.out.print(MyConstants.R);
-        String c= scanner.nextLine();
+
+        String c;
         Currency currency = null;
         do {
+            System.out.println(MyConstants.CURRENCY);
+            System.out.print(MyConstants.R);
+            c= scanner.nextLine();
             switch (c) {
                 case "1":
                     currency = Currency.RON;
@@ -510,7 +517,7 @@ public class Application implements Serializable {
         if(role.equals("admin")) {
             do {
                 okDouble = true;
-                System.out.println(MyConstants.INITIAL_BALANCE);
+                System.out.print(MyConstants.INITIAL_BALANCE);
                 try {
                     balance = scanner.nextDouble();
                 } catch (Exception e) {
@@ -572,11 +579,13 @@ public class Application implements Serializable {
 
         System.out.println(MyConstants.VIEW_ACCOUNTS);
 
-        for (int i = 0; i<accounts.length; i++)
-            for (int j = 0; j<accounts[0].length; j++){
-                if(accounts[i][j] != null)
+        for (int i = 0; i<accounts.length; i++) {
+            for (int j = 0; j < accounts[0].length; j++) {
+                if (accounts[i][j] != null){
                     System.out.println(accounts[i][j]);
+                }
             }
+        }
     }
 
 
@@ -624,9 +633,18 @@ public class Application implements Serializable {
         for (int i = 0; i<accounts.length; i++){
                 if(i!=id){
                     accountsCopy[k]=accounts[i];
+                    k++;
                 }
-            k++;
+
         }
+        for(i=0;i<accountsCopy.length;i++){
+            for(int j=0;j<accountsCopy[j].length; j++){
+                if(accountsCopy[i][j]!= null){
+                    System.out.println(accountsCopy[i][j]);
+                }
+            }
+        }
+
         accounts = accountsCopy;
         viewBankAccounts();
 
@@ -667,19 +685,18 @@ public class Application implements Serializable {
         System.out.println(MyConstants.SEE_TRANSACTIONS);
         Set<BankAccount> bankAccounts = transactions.keySet();
         for(BankAccount ba: bankAccounts){
-            System.out.println(MyConstants.SEPARATOR);
-            if(ba.getAccountOwner().getUsername().equals(users[currentUserId].getUsername()))
+            if(ba.getAccountOwner().getUsername().equals(users[currentUserId].getUsername())) {
                 System.out.println(ba.getAccountNumber() + " - " + ba.getName() + ": " + df2.format(ba.getBalance()) + " " +
                         ba.getCurrency());
-            for(Transaction t:transactions.get(ba))
-            {
-                if(t.getType().equals(Type.SEND)){
-                    System.out.println(MyConstants.RED + "---"+ t + MyConstants.RESET);
-                }
-                else{
-                    System.out.println(MyConstants.BLUE+ "---"+ t + MyConstants.RESET);
-                }
+                for (Transaction t : transactions.get(ba)) {
+                    if (t.getType().equals(Type.SEND)) {
+                        System.out.println(MyConstants.RED + "---" + t + MyConstants.RESET);
+                    } else {
+                        System.out.println(MyConstants.BLUE + "---" + t + MyConstants.RESET);
+                    }
 
+                }
+                System.out.println(MyConstants.SEPARATOR);
             }
         }
     }
@@ -985,7 +1002,6 @@ public class Application implements Serializable {
 
 
         if(method.equals("add")){
-
             for(BankAccount ba: bankAccounts)
             {
                 if(ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())){

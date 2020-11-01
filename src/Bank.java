@@ -37,10 +37,8 @@ public class Bank implements Serializable {
 
     @Override
     public String toString() {
-        return "Bank{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", country='" + country + '\'' +
-                '}';
+        return  "id:" + id +
+                ", name:" + name +
+                ", country:" + country;
     }
 }

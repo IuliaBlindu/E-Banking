@@ -67,6 +67,6 @@ public class Transaction implements Serializable {
 
     @Override
     public String toString() {
-        return secondAccount + " - " + amount + " Details:" + details;
+        return secondAccount + " - " + amount + "Category: " + category + " Details:" + details;
     }
 }

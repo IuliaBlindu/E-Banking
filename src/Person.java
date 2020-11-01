@@ -128,15 +128,14 @@ public abstract class Person implements Serializable {
 
     @Override
     public String toString() {
-        return  ", lastName='" + lastName + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", gender=" + gender +
-                ", dateOfBirth=" + dateOfBirth +
-                ", CNP='" + CNP + '\'' +
-                ", ID='" + ID + '\'' +
-                ", address='" + address + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
+        return  ", lastName:" + lastName +
+                ", firstName:" + firstName  +
+                ", gender:" + gender +
+                ", dateOfBirth:" + dateOfBirth +
+                ", CNP:" + CNP  +
+                ", ID:" + ID +
+                ", address:" + address +
+                ", email:" + email  +
+                ", phoneNumber:" + phoneNumber;
     }
 }
