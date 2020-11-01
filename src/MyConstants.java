@@ -95,5 +95,10 @@ public final class MyConstants {
     public static final String INCORRECT_DATE = "Incorrect date format!";
     public static final String ID_EXISTS = "Id already exists!";
     public static final String BANK_EXISTS = "Bank already exists!";
+    public static final String NO_ACCOUNTS = "User has no accounts!";
+    public static final String ADDED_YOU = "Added by you";
+    public static final String WITHDRAWN_YOU = "Withdrawn by you";
+
+    public static final String AGE_NOT_VALID = "Age not valid! User has to have at least 18 years old!";
 
 }

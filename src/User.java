@@ -42,7 +42,7 @@ public class User extends Person implements Serializable {
 
     @Override
     public void welcome(String username) {
-        System.out.println("Welcome" + username);
+        System.out.print("\nWelcome " + username.toUpperCase() + "!");
     }
 
     @Override

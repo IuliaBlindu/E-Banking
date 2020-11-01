@@ -1,11 +1,18 @@
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.*;
 import java.text.DecimalFormat;
+import java.util.concurrent.ConcurrentHashMap;
+
+//NICE TO HAVE
+// -- bold la tranzactii
+// -- exit wherever
 
 // comments
-// custom exception
 
 public class Application implements Serializable {
 
@@ -15,8 +22,7 @@ public class Application implements Serializable {
     public static User[] users = new User[50];
     public static BankAccount[][] accounts = new BankAccount[50][10];
     public static List<Bank> banks = new ArrayList<>();
-    public static Hashtable<BankAccount, List<Transaction>> transactions =
-            new Hashtable<>();
+    public static ConcurrentHashMap<BankAccount, List<Transaction>> transactions =  new ConcurrentHashMap<>();
 
     private static final DecimalFormat df2 = new DecimalFormat("#.##");
 
@@ -58,7 +64,7 @@ public class Application implements Serializable {
 
         try(FileInputStream in = new FileInputStream(MyConstants.TRANSACTIONS_FILE);
             ObjectInputStream s = new ObjectInputStream(in)) {
-            transactions = (Hashtable<BankAccount, List<Transaction>>) s.readObject();
+            transactions = (ConcurrentHashMap<BankAccount, List<Transaction>>) s.readObject();
         } catch (IOException  e) {
             System.out.println(MyConstants.IO_EXCEPTION + e);
         } catch (ClassNotFoundException e) {
@@ -238,6 +244,7 @@ public class Application implements Serializable {
             for (User user : users) {
                 if (user!= null && user.getUsername().equals(username)) {
                     usernameOk = false;
+                    break;
                 }
             }
             if(!usernameOk){
@@ -276,6 +283,15 @@ public class Application implements Serializable {
             } catch (ParseException e) {
                 System.out.println(MyConstants.INCORRECT_DATE);
             }
+            if(date != null){
+                try {
+                    validateAge(date);
+                }
+                catch (InvalidAgeException e){
+                    System.out.println(e.getMessage());
+                    date = null;
+                }
+            }
         }while (date == null);
 
         System.out.print(MyConstants.CNP);
@@ -304,7 +320,6 @@ public class Application implements Serializable {
             if(user != null){
                 System.out.println(user);
             }
-
         }
     }
 
@@ -324,6 +339,7 @@ public class Application implements Serializable {
             for (Bank bank : banks) {
                 if (bank.getId().equals(id)) {
                     idOk = false;
+                    break;
                 }
             }
             if(!idOk){
@@ -637,14 +653,6 @@ public class Application implements Serializable {
                 }
 
         }
-        for(i=0;i<accountsCopy.length;i++){
-            for(int j=0;j<accountsCopy[j].length; j++){
-                if(accountsCopy[i][j]!= null){
-                    System.out.println(accountsCopy[i][j]);
-                }
-            }
-        }
-
         accounts = accountsCopy;
         viewBankAccounts();
 
@@ -662,22 +670,31 @@ public class Application implements Serializable {
                 System.out.println(iterator + "-> " + u.getUsername());
                 iterator++;
             }
+
         System.out.print(MyConstants.R);
 
         int userId = scanner.nextInt();
         scanner.nextLine();
         System.out.println(MyConstants.CHOOSE_ACCOUNT);
+        iterator = 0;
         for (int i = 0; i<accounts[userId].length; i++){
           if(accounts[userId][i]!=null){
               System.out.println(" " + i + "-> " + accounts[userId][i].getName()+ " - " + accounts[userId][i].getAccountNumber() );
+              iterator++;
           }
         }
-        int accountId = scanner.nextInt();
-        scanner.nextLine();
-        for (int i = accountId; i<accounts[userId].length-1; i++){
-            accounts[userId][i] = accounts[userId][i+1];
+        if (iterator == 0){
+            System.out.println(MyConstants.NO_ACCOUNTS);
         }
-        viewBankAccounts();
+        else {
+            int accountId = scanner.nextInt();
+            scanner.nextLine();
+            for (int i = accountId; i<accounts[userId].length-1; i++){
+                accounts[userId][i] = accounts[userId][i+1];
+            }
+            viewBankAccounts();
+        }
+
     }
 
 
@@ -708,10 +725,12 @@ public class Application implements Serializable {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println(MyConstants.CHOOSE_TYPE);
-        System.out.print(MyConstants.R);
-        String t = scanner.nextLine();
+
+        String t;
         Type type = null;
         do {
+            System.out.print(MyConstants.R);
+            t = scanner.nextLine();
             switch (t) {
                 case "1":
                     type = Type.SEND;
@@ -811,10 +830,11 @@ public class Application implements Serializable {
 
 
         System.out.println(MyConstants.CHOOSE_CATEGORY);
-        System.out.print(MyConstants.R);
-        String c = scanner.nextLine();
+        String c;
         Category category = null;
         do {
+            System.out.print(MyConstants.R);
+            c = scanner.nextLine();
             switch (c) {
                 case "1":
                     category = Category.BILLS;
@@ -1011,7 +1031,7 @@ public class Application implements Serializable {
             }
 
             accounts[currentUserId][myA].changeBalance(amount,Type.RECEIVE);
-            transaction = new Transaction("-",Type.RECEIVE,Category.OTHER,amount,"");
+            transaction = new Transaction(MyConstants.ADDED_YOU,Type.RECEIVE,Category.OTHER,amount,MyConstants.ADDED_YOU);
             transactionsList.add(transaction);
             transactions.put(accounts[currentUserId][myA],transactionsList);
         }
@@ -1031,7 +1051,7 @@ public class Application implements Serializable {
                    }
 
                    accounts[currentUserId][myA].changeBalance(amount,Type.SEND);
-                   transaction = new Transaction("-",Type.SEND,Category.OTHER,amount,"");
+                   transaction = new Transaction(MyConstants.WITHDRAW_MONEY,Type.SEND,Category.OTHER,amount,MyConstants.WITHDRAW_MONEY);
                    transactionsList.add(transaction);
                    transactions.put(accounts[currentUserId][myA],transactionsList);
                }
@@ -1062,6 +1082,16 @@ public class Application implements Serializable {
         int m = (int) Math.pow(10, n - 1);
         int result =  m + new Random().nextInt(9 * m);
         return String.valueOf(result);
+    }
+
+    public static void validateAge(Date date) throws InvalidAgeException{
+
+        LocalDate birthday = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate today = LocalDate.now();
+        Period p = Period.between(birthday, today);
+        if(p.getYears() < 18){
+            throw new InvalidAgeException(MyConstants.AGE_NOT_VALID);
+        }
     }
 
     public static void main(String[] args)  {
