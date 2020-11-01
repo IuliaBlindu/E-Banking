@@ -78,6 +78,7 @@ public final class MyConstants {
     public static final String R= "R:";
     public static final String EXIT = "\nSaving Changes...\nExiting Application";
     public static final String INVALID_OPTION = "This is not a valid option!";
+    public static final String NOT_ENOUGH_MONEY = "Not enough money in sender's account!";
     public static final String TRY_AGAIN = "Try Again? \n 0-> NO \n 1-> YES";
 
     public static final String RED = "\033[0;31m";

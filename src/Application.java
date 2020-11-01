@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 //NICE TO HAVE
 // -- bold la tranzactii
 // -- exit wherever
+// -- delete transactions too
 
-// comments
 
 public class Application implements Serializable {
 
@@ -26,7 +26,11 @@ public class Application implements Serializable {
 
     private static final DecimalFormat df2 = new DecimalFormat("#.##");
 
-
+    /**
+     * function to load all data from files in their specific data structures
+     * there is one file for each category of data saved: accounts, banks, transactions
+     * and users
+     */
     private static void load() {
 
         try(FileInputStream in = new FileInputStream(MyConstants.USER_FILE);
@@ -81,7 +85,11 @@ public class Application implements Serializable {
         }
     }
 
-
+    /**
+     * function to save all data from  specific data structures into their files
+     * there is one file for each category of data saved: accounts, banks, transactions
+     * and users
+     */
     private static void save() {
 
         try(FileOutputStream f = new FileOutputStream(MyConstants.USER_FILE);
@@ -117,7 +125,11 @@ public class Application implements Serializable {
         }
 
     }
-    
+
+    /**
+     * function that generates the menu for admin role and calls the function
+     * that does what user asked
+     */
     public static void admin(){
 
         do {
@@ -150,7 +162,7 @@ public class Application implements Serializable {
                     deleteUser();
                     break;
                 case "8":
-                    deleteAccount();
+                    deleteBankAccount();
                     break;
                 case "9":
                     return;
@@ -166,7 +178,10 @@ public class Application implements Serializable {
         }while (true);
     }
 
-
+    /**
+     * function that generates the menu for client role and calls the function
+     * that does what user asked
+     */
     public static void client() {
         Scanner scan = new Scanner(System.in);
         boolean correctUser = false;
@@ -174,6 +189,8 @@ public class Application implements Serializable {
         int id = 0;
         System.out.print(MyConstants.USERNAME);
         String username = scan.nextLine();
+
+        //verify the user is correct
         for(int i=0; i<users.length; i++){
             if(users[i] != null && users[i].getUsername().equals(username)) {
                 correctUser = true;
@@ -181,6 +198,7 @@ public class Application implements Serializable {
                 correctPassword = users[i] .getPassword();
             }
         }
+        //verify the password is correct and generate the menu
         if(correctUser){
             System.out.print(MyConstants.PASSWORD);
             String password = scan.nextLine();
@@ -229,11 +247,14 @@ public class Application implements Serializable {
         else System.out.println(MyConstants.NO_USER);
     }
 
-
+    /**
+     * function to add a new user
+     */
     private static void addNewUser() {
 
         System.out.println(MyConstants.ADD_USER);
 
+        //get username and verify if it already exists
         Scanner scanner = new Scanner(System.in);
         boolean usernameOk;
         String username;
@@ -260,6 +281,8 @@ public class Application implements Serializable {
         String firstName= scanner.nextLine();
         System.out.println(MyConstants.GENDER);
         System.out.print(MyConstants.R);
+
+
         String g= scanner.nextLine();
         Gender gender;
         if(g.equals("1")){
@@ -275,6 +298,7 @@ public class Application implements Serializable {
         String dateScan;
         Date date = null;
 
+        //verify the date was introduced correctly: format and age properly
         do {
             System.out.print(MyConstants.BIRTH);
             dateScan = scanner.nextLine();
@@ -305,6 +329,7 @@ public class Application implements Serializable {
         System.out.print(MyConstants.PHONE);
         String phoneNumber=scanner.nextLine();
 
+        //create new object and add it to data
         User u = new User( username, password, userId, lastName, firstName, gender, date, CNP, ID,
                            address, email, phoneNumber);
 
@@ -312,7 +337,9 @@ public class Application implements Serializable {
         i++;
     }
 
-
+    /**
+     * function to see the list of users
+     */
     private static void viewUsers() {
 
         System.out.println(MyConstants.VIEW_USER);
@@ -323,14 +350,17 @@ public class Application implements Serializable {
         }
     }
 
-
+    /**
+     * function to add a new bank
+     */
     private static void addNewBank() {
 
         System.out.println(MyConstants.ADD_BANK);
 
+        //verify if bank id already exists
         Scanner scanner = new Scanner(System.in);
         boolean idOk;
-        String tryagain="1";
+        String tryagain;
         String id;
         do {
             System.out.print(MyConstants.ID);
@@ -343,14 +373,17 @@ public class Application implements Serializable {
                 }
             }
             if(!idOk){
+                //check if users wants to continue his action
                 System.out.println(MyConstants.ID_EXISTS);
                 System.out.println(MyConstants.TRY_AGAIN);
-                if(tryagain.equals(0)){
+                tryagain = scanner.nextLine();
+                if("0".equals(tryagain)){
                     return;
                 }
             }
         }while(!idOk);
 
+        //verify if bank name already exists
         boolean nameOk;
         String name;
         do {
@@ -360,12 +393,16 @@ public class Application implements Serializable {
             for (Bank bank : banks) {
                 if (bank.getName().equals(name)) {
                     nameOk = false;
+                    break;
                 }
             }
             if(!nameOk){
+
+                //check if users wants to continue his action
                 System.out.println(MyConstants.BANK_EXISTS);
                 System.out.println(MyConstants.TRY_AGAIN);
-                if(tryagain.equals(0)){
+                tryagain = scanner.nextLine();
+                if(tryagain.equals("0")){
                     return;
                 }
             }
@@ -379,7 +416,9 @@ public class Application implements Serializable {
         banks.add(b);
     }
 
-
+    /**
+     * function view all banks
+     */
     private static void viewBanks() {
 
         System.out.println(MyConstants.VIEW_BANKS);
@@ -388,13 +427,18 @@ public class Application implements Serializable {
             System.out.println(bank);
     }
 
-
+    /**
+     * function to add a bank account
+     * @param  role  role of user(admin, client) since admin can create accounts for any user
+     *               while user just for himself
+     */
     private static void addNewBankAccount(String role) {
 
         System.out.println(MyConstants.ADD_BANK_ACCOUNT);
 
         Scanner scanner = new Scanner(System.in);
 
+        //generate list of banks
         System.out.println(MyConstants.CHOOSE_BANK);
         int iterator = 0;
         for (Bank bank: banks){
@@ -407,6 +451,7 @@ public class Application implements Serializable {
         int bankChoice = 0;
         Bank bank = null;
 
+        //verify if user input is correct
         do {
             okIndex = true;
             do {
@@ -430,17 +475,24 @@ public class Application implements Serializable {
 
         User accountOwner = new User();
         int id = 0;
+
+        //verify the role of user to decide who the accountOwner is
         if(role.equals("admin")){
+
+            //let admin decide if it wants to write the id of user or select
             System.out.println(MyConstants.ADD_USER_OPTIONS);
             boolean okChoice;
             do {
                 okChoice = true;
                 System.out.print(MyConstants.R);
                 String choice = scanner.nextLine();
+
                 switch (choice) {
                     case "1":
                         do {
                             okIndex = true;
+
+                            //verify user input to pe in correct format
                             do {
                                 okInt = true;
                                 System.out.print(MyConstants.ID);
@@ -452,6 +504,8 @@ public class Application implements Serializable {
                                 }
                                 scanner.nextLine();
                             } while (!okInt);
+
+                            //verify if user exists
                             try {
                                 accountOwner = new User(users[id]);
                             } catch (IndexOutOfBoundsException | NullPointerException e) {
@@ -460,16 +514,21 @@ public class Application implements Serializable {
                             }
                         } while (!okIndex);
                         break;
+
                     case "2":
                         System.out.println(MyConstants.CHOICES);
                         iterator = 0;
+
+                        //generate list of users to choose from
                         for (User u : users)
                             if (u != null) {
                                 System.out.println(iterator + "-> " + u.getUsername());
                                 iterator++;
                             }
                         do {
-                            okIndex = true;
+
+
+                            //verify user input to pe in correct format
                             do {
                                 okInt = true;
                                 System.out.print(MyConstants.R);
@@ -481,6 +540,9 @@ public class Application implements Serializable {
                                 }
                                 scanner.nextLine();
                             } while (!okInt);
+
+                            //verify if user exists
+
                             try {
                                 accountOwner = new User(users[id]);
                             } catch (IndexOutOfBoundsException | NullPointerException e) {
@@ -530,6 +592,8 @@ public class Application implements Serializable {
         boolean okDouble;
         double balance = 0;
 
+        //just admin can put an initial balance
+
         if(role.equals("admin")) {
             do {
                 okDouble = true;
@@ -547,36 +611,47 @@ public class Application implements Serializable {
         String accountNumber;
         String cardNumber;
 
-        Boolean ok;
+        boolean ok;
+
+        //generate a unique account number
 
         do {
             accountNumber = generateRandomDigits(10);
             ok = true;
-            for (int i = 0; i<accounts.length; i++)
+            for (int i = 0; i<accounts.length; i++){
                 for (int j = 0; j<accounts[0].length; j++){
-                    if(accounts[i][j] != null && accounts[i][j].getAccountNumber().equals(accountNumber))
-                       ok = false;
+                    if(accounts[i][j] != null && accounts[i][j].getAccountNumber().equals(accountNumber)) {
+                        ok = false;
+                        break;
+                    }
                 }
+            }
         }while(!ok);
 
+        //generate a unique card number
         do {
             cardNumber = generateRandomDigits(10);
             ok = true;
             for (int i = 0; i<accounts.length; i++)
                 for (int j = 0; j<accounts[0].length; j++){
-                    if(accounts[i][j] != null && accounts[i][j].getCardNumber().equals(cardNumber))
+                    if(accounts[i][j] != null && accounts[i][j].getCardNumber().equals(cardNumber)){
                         ok = false;
+                        break;
+                    }
                 }
         }while(!ok);
 
+        //generate CVV
         String CVV = generateRandomDigits(3);
 
+        //set date to be after four years from current date
         Date date = new Date(System.currentTimeMillis());
         Calendar cDate = Calendar.getInstance();
         cDate.setTime(date);
         cDate.add(Calendar.YEAR, 4);
         Date cardExpiryDate = cDate.getTime();
 
+        //generate object and add it to data
         BankAccount ba = new BankAccount(bank,accountOwner, accountName, accountNumber,cardNumber,cardExpiryDate,CVV, balance, currency);
 
         for(iterator = 0; iterator<accounts[id].length; iterator ++){
@@ -586,11 +661,14 @@ public class Application implements Serializable {
             }
         }
 
+        //initialize transactions entry for this bank account
         List<Transaction> transaction = new ArrayList<>();
         transactions.put(ba,transaction);
     }
 
-
+    /**
+     * function to view all bank accounts
+     */
     private static void viewBankAccounts() {
 
         System.out.println(MyConstants.VIEW_ACCOUNTS);
@@ -604,13 +682,17 @@ public class Application implements Serializable {
         }
     }
 
-
+    /**
+     * function to delete an user
+     */
     private static void deleteUser() {
         System.out.println(MyConstants.DELETE_USER);
         System.out.println(MyConstants.CHOICES);
 
         Scanner scanner = new Scanner(System.in);
         int iterator = 0;
+
+        //generate list of users to choose from
         for (User u: users)
             if(u!=null) {
                 System.out.println(iterator + "-> " + u.getUsername());
@@ -621,6 +703,7 @@ public class Application implements Serializable {
         int id = 0;
         do {
             okIndex = true;
+            //verify user input
             do {
                 okInt = true;
                 System.out.print(MyConstants.R);
@@ -633,17 +716,19 @@ public class Application implements Serializable {
                 scanner.nextLine();
             } while (!okInt);
 
+            //verify user exists
             if(id>(iterator-1)){
                 System.out.println(MyConstants.USER_NOT_EXIST);
                 okIndex=false;
             }
         }while(!okIndex);
 
+        //delete user from data
         for (int i = id; i < users.length - 1; i++) {
             users[i] = users[i + 1];
         }
 
-        viewUsers();
+       //delete user's accounts too
         BankAccount[][] accountsCopy =  new BankAccount[50][10];
         int k=0;
         for (int i = 0; i<accounts.length; i++){
@@ -654,15 +739,20 @@ public class Application implements Serializable {
 
         }
         accounts = accountsCopy;
+
+        viewUsers();
         viewBankAccounts();
 
     }
 
-
-    private static void deleteAccount() {
+    /**
+     * function to delete a bank account
+     */
+    private static void deleteBankAccount() {
         System.out.println(MyConstants.DELETE_ACCOUNT);
         System.out.println(MyConstants.CHOOSE_OWNER);
 
+        // choose user
         Scanner scanner = new Scanner(System.in);
         int iterator = 0;
         for (User u: users)
@@ -677,12 +767,15 @@ public class Application implements Serializable {
         scanner.nextLine();
         System.out.println(MyConstants.CHOOSE_ACCOUNT);
         iterator = 0;
+        // generate list of accounts
         for (int i = 0; i<accounts[userId].length; i++){
           if(accounts[userId][i]!=null){
               System.out.println(" " + i + "-> " + accounts[userId][i].getName()+ " - " + accounts[userId][i].getAccountNumber() );
               iterator++;
           }
         }
+
+        // verify if user has accounts
         if (iterator == 0){
             System.out.println(MyConstants.NO_ACCOUNTS);
         }
@@ -697,7 +790,9 @@ public class Application implements Serializable {
 
     }
 
-
+    /**
+     * function to see client's accounts with its transactions
+     */
     private static void seeTransactions() {
         System.out.println(MyConstants.SEE_TRANSACTIONS);
         Set<BankAccount> bankAccounts = transactions.keySet();
@@ -718,7 +813,9 @@ public class Application implements Serializable {
         }
     }
 
-
+    /**
+     * function to add a new transaction
+     */
     private static void addTransaction() {
 
         System.out.println(MyConstants.ADD_TRANSACTION);
@@ -744,6 +841,8 @@ public class Application implements Serializable {
             }
         } while (type == null);
 
+
+        //choose account from which the transaction should be made
         System.out.println(MyConstants.CHOOSE_YOUR_ACCOUNT);
         for (int iterator = 0; iterator < accounts[currentUserId].length; iterator ++){
             if(accounts[currentUserId][iterator] != null){
@@ -759,6 +858,8 @@ public class Application implements Serializable {
         BankAccount myAccount = null;
         do {
             okIndex = true;
+
+            //verify user input to be in the correct format
             do {
                 okInt = true;
                 System.out.print(MyConstants.R);
@@ -770,6 +871,8 @@ public class Application implements Serializable {
                 }
                 scanner.nextLine();
             } while (!okInt);
+
+            //verify the account exists
             try {
                 myAccount = accounts[currentUserId][myA];
             } catch (IndexOutOfBoundsException | NullPointerException e) {
@@ -787,6 +890,7 @@ public class Application implements Serializable {
             System.out.print(MyConstants.INTRODUCE_OTHER_ACCOUNT);
             secondAccount = scanner.nextLine();
 
+            //verify the other account exists
             for(int i=0; i<accounts.length;i++){
                 for(int j=0; j<accounts[i].length; j++){
                     if(accounts[i][j] != null && secondAccount.equals(accounts[i][j].getAccountNumber()))
@@ -816,6 +920,8 @@ public class Application implements Serializable {
 
         double amount=0;
         boolean okDouble;
+
+        //verify user input to be in the correct format
         do {
             okDouble = true;
             System.out.print(MyConstants.AMOUNT);
@@ -879,6 +985,8 @@ public class Application implements Serializable {
 
         String tryAgain = "1";
         while(tryAgain.equals("1")){
+
+            //determine the receiver and sender
             if(type == Type.RECEIVE){
                 receiverI = currentUserId;
                 receiverJ = myA;
@@ -887,6 +995,7 @@ public class Application implements Serializable {
                 receiver = new BankAccount(myAccount);
                 sender = new BankAccount(otherAccount);
                 receivedAmount = amount;
+                //convert amount to sender currency
                 sentAmount = sender.convert(amount,receiver.getCurrency());
                 System.out.println("SENT AMOUNT: " + sentAmount);
             }
@@ -898,9 +1007,11 @@ public class Application implements Serializable {
                 receiver = new BankAccount(otherAccount);
                 sender = new BankAccount(myAccount);
                 sentAmount = amount;
+                //convert amount to receiver currency
                 receivedAmount = receiver.convert(amount,sender.getCurrency());
             }
 
+            //verify sender has enough money
             ok = sender.verifyBalance(sentAmount);
 
 
@@ -910,6 +1021,9 @@ public class Application implements Serializable {
                 Set<BankAccount> bankAccounts = transactions.keySet();
                 BankAccount senderBA = null;
                 BankAccount receiverBA = null;
+
+                //verify if transactions for this accounts already exists in order to add
+                //a new transaction to list
                 for(BankAccount ba: bankAccounts)
                 {
                     if(ba.getAccountNumber().equals(sender.getAccountNumber())){
@@ -921,13 +1035,17 @@ public class Application implements Serializable {
                         receiverBA = ba;
                     }
                 }
-                transactions.remove(senderBA);
-                transactions.remove(receiverBA);
+                if(senderBA != null){
+                    transactions.remove(senderBA);
+                }
+                if(receiverBA != null){
+                    transactions.remove(receiverBA);
+                }
 
-                accounts[senderI][senderJ].changeBalance(sentAmount, type.SEND);
-                accounts[receiverI][receiverJ].changeBalance(receivedAmount, type.RECEIVE);
+                accounts[senderI][senderJ].changeBalance(sentAmount, Type.SEND);
+                accounts[receiverI][receiverJ].changeBalance(receivedAmount, Type.RECEIVE);
 
-                receiverTransaction = new Transaction(secondAccount, type.RECEIVE, category, receivedAmount, details);
+                receiverTransaction = new Transaction(secondAccount, Type.RECEIVE, category, receivedAmount, details);
                 senderTransaction = new Transaction(myAccount.getAccountNumber(), Type.SEND, category, sentAmount, details);
 
                 receiverTransactions.add(receiverTransaction);
@@ -937,6 +1055,8 @@ public class Application implements Serializable {
                 transactions.put(accounts[senderI][senderJ],senderTransactions);
             }
             else {
+                //ask user if he wants to add another amount if sender does not have enough money
+                System.out.println(MyConstants.NOT_ENOUGH_MONEY);
                 System.out.println(MyConstants.TRY_AGAIN);
                 tryAgain = scanner.nextLine();
                 if(tryAgain.equals("1")){
@@ -957,7 +1077,10 @@ public class Application implements Serializable {
 
     }
 
-
+    /**
+     * function to add or withdraw money from account
+     * @param   method - add or witdraw money
+     */
     private static void changeBalance(String method) {
 
         Scanner scanner = new Scanner(System.in);
@@ -970,6 +1093,7 @@ public class Application implements Serializable {
         System.out.println(MyConstants.CHOOSE_YOUR_ACCOUNT);
 
         int counter = 0;
+        // generate list of accounts
         for (int iterator = 0; iterator < accounts[currentUserId].length; iterator ++){
             if(accounts[currentUserId][iterator] != null){
                 System.out.println(" " + iterator + "-> " + accounts[currentUserId][iterator].getName() + " - " +
@@ -985,6 +1109,7 @@ public class Application implements Serializable {
         do {
             okIndex = true;
             do {
+                //verify user input is in correct format
                 okInt = true;
                 System.out.print(MyConstants.R);
                 try {
@@ -995,6 +1120,7 @@ public class Application implements Serializable {
                 }
                 scanner.nextLine();
             } while (!okInt);
+            // verify account exists
             if(myA>(counter-1)) {
                 System.out.println(MyConstants.WRONG_INPUT);
                 okIndex=false;
@@ -1003,6 +1129,7 @@ public class Application implements Serializable {
 
         double amount=0;
         boolean okDouble;
+        //verify user input is in correct format
         do {
             okDouble = true;
             System.out.print(MyConstants.AMOUNT);
@@ -1022,6 +1149,8 @@ public class Application implements Serializable {
 
 
         if(method.equals("add")){
+
+            //verify if there are already transactions for this account to add a new one
             for(BankAccount ba: bankAccounts)
             {
                 if(ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())){
@@ -1030,6 +1159,7 @@ public class Application implements Serializable {
                 }
             }
 
+            //change balance
             accounts[currentUserId][myA].changeBalance(amount,Type.RECEIVE);
             transaction = new Transaction(MyConstants.ADDED_YOU,Type.RECEIVE,Category.OTHER,amount,MyConstants.ADDED_YOU);
             transactionsList.add(transaction);
@@ -1039,9 +1169,11 @@ public class Application implements Serializable {
             String tryAgain = "1";
             boolean ok;
             do {
+                //verify if the balance is sufficient to withdraw money
                 ok = accounts[currentUserId][myA].verifyBalance(amount);
 
                if(ok) {
+                   //verify if there are already transactions for this account to add a new one
                    for(BankAccount ba: bankAccounts)
                    {
                        if(ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())){
@@ -1050,6 +1182,7 @@ public class Application implements Serializable {
                        }
                    }
 
+                   //change balance
                    accounts[currentUserId][myA].changeBalance(amount,Type.SEND);
                    transaction = new Transaction(MyConstants.WITHDRAW_MONEY,Type.SEND,Category.OTHER,amount,MyConstants.WITHDRAW_MONEY);
                    transactionsList.add(transaction);
@@ -1059,6 +1192,7 @@ public class Application implements Serializable {
                    System.out.println(MyConstants.TRY_AGAIN);
                    tryAgain = scanner.nextLine();
                    if(tryAgain.equals("1")){
+                       //verify if user wants to add another amount if there are not enough money into account
                        do {
                            okDouble = true;
                            System.out.print(MyConstants.AMOUNT);
@@ -1076,7 +1210,11 @@ public class Application implements Serializable {
         }
     }
 
-
+    /**
+     * function generate string of digits
+     * @param   n - number of digits to be generated
+     * @return  String with the required number of digits
+     */
     public static String generateRandomDigits(int n) {
 
         int m = (int) Math.pow(10, n - 1);
@@ -1084,6 +1222,11 @@ public class Application implements Serializable {
         return String.valueOf(result);
     }
 
+    /**
+     * function to validate age
+     * @param   date - date of birth of user
+     * @throws  InvalidAgeException
+     */
     public static void validateAge(Date date) throws InvalidAgeException{
 
         LocalDate birthday = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -1098,8 +1241,10 @@ public class Application implements Serializable {
 
         Scanner scan = new Scanner(System.in);
 
+        //load data from files
         load();
 
+        //generate main menu
         while(true) {
             System.out.println(MyConstants.E_BANKING);
             System.out.println(MyConstants.MAIN_MENU);
@@ -1109,6 +1254,7 @@ public class Application implements Serializable {
 
             switch (choice) {
                 case "1":
+                    //verify password for admin
                     System.out.print(MyConstants.PASSWORD);
                     String password = scan.nextLine();
                     if (password.equals(MyConstants.ADMIN_PASSWORD)) {
@@ -1131,7 +1277,5 @@ public class Application implements Serializable {
 
             }
         }
-
-
     }
 }

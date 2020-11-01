@@ -149,6 +149,12 @@ public class BankAccount implements Serializable {
         this.transactions.add(transaction);
     }
 
+
+    /**
+     * function get value of currency in RON
+     * @param   c - currency
+     * @return value of curency in RON
+     */
     public double currency(Currency c){
         if(c == currency.RON){
             return MyConstants.RON;
@@ -161,6 +167,12 @@ public class BankAccount implements Serializable {
         }
     }
 
+    /**
+     * function convert given amount in given currency in the currency of current object
+     * @param   amount - the amount of money to be converted
+     * @param   c      - currency from which to be converted
+     * @return amount of money in the currency of current object
+     */
     public double convert (double amount, Currency c){
         double multiply = currency(c);
         double divide = currency(this.currency);
@@ -170,7 +182,11 @@ public class BankAccount implements Serializable {
         return amount;
     }
 
-
+    /**
+     * function to verify if the balance of current object is greater than the requested amount
+     * @param   amount - the amount of money requested
+     * @return true if balance is sufficient, false else
+     */
     public boolean verifyBalance (double amount){
 
         if (amount>this.balance){
@@ -183,6 +199,11 @@ public class BankAccount implements Serializable {
 
     }
 
+    /**
+     * function to change the balance of the current object with a given amount
+     * @param   amount - the amount of money
+     * @param   t      - type of transaction - add money or remove them from account
+     */
     public void changeBalance(double amount, Type t){
 
         if (t == Type.RECEIVE) {
