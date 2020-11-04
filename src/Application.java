@@ -8,15 +8,10 @@ import java.util.*;
 import java.text.DecimalFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
-//NICE TO HAVE
-// -- bold la tranzactii
-// -- exit wherever
-// -- delete transactions too
-
 
 public class Application implements Serializable {
 
-    public static int i = 0;
+    public static int iUser = 0;
     public static int userId = 0;
     public static int currentUserId = -1;
     public static User[] users = new User[50];
@@ -79,7 +74,7 @@ public class Application implements Serializable {
 
         for (User user : users) {
             if(user != null) {
-                i++;
+                iUser++;
                 userId=user.getId() + 1;
             }
         }
@@ -329,12 +324,18 @@ public class Application implements Serializable {
         System.out.print(MyConstants.PHONE);
         String phoneNumber=scanner.nextLine();
 
-        //create new object and add it to data
-        User u = new User( username, password, userId, lastName, firstName, gender, date, CNP, ID,
-                           address, email, phoneNumber);
+        System.out.println(MyConstants.SAVE_CHANGES);
+        System.out.print(MyConstants.R);
+        String save = scanner.nextLine();
+        if (save.equals("1")){
+            //create new object and add it to data
+            User u = new User( username, password, userId, lastName, firstName, gender, date, CNP, ID,
+                    address, email, phoneNumber);
 
-        users[i]=new User(u);
-        i++;
+            users[iUser]=new User(u);
+            iUser++;
+        }
+
     }
 
     /**
@@ -411,9 +412,13 @@ public class Application implements Serializable {
         System.out.print(MyConstants.COUNTRY);
         String country= scanner.nextLine();
 
-        Bank b = new Bank( id, name, country);
-
-        banks.add(b);
+        System.out.println(MyConstants.SAVE_CHANGES);
+        System.out.print(MyConstants.R);
+        String save = scanner.nextLine();
+        if (save.equals("1")) {
+            Bank b = new Bank(id, name, country);
+            banks.add(b);
+        }
     }
 
     /**
@@ -611,59 +616,64 @@ public class Application implements Serializable {
         String accountNumber;
         String cardNumber;
 
-        boolean ok;
+        System.out.println(MyConstants.SAVE_CHANGES);
+        System.out.print(MyConstants.R);
+        String save = scanner.nextLine();
+        if (save.equals("1")) {
+            boolean ok;
+            //generate a unique account number
 
-        //generate a unique account number
-
-        do {
-            accountNumber = generateRandomDigits(10);
-            ok = true;
-            for (int i = 0; i<accounts.length; i++){
-                for (int j = 0; j<accounts[0].length; j++){
-                    if(accounts[i][j] != null && accounts[i][j].getAccountNumber().equals(accountNumber)) {
-                        ok = false;
-                        break;
+            do {
+                accountNumber = generateRandomDigits(10);
+                ok = true;
+                for (int i = 0; i < accounts.length; i++) {
+                    for (int j = 0; j < accounts[0].length; j++) {
+                        if (accounts[i][j] != null && accounts[i][j].getAccountNumber().equals(accountNumber)) {
+                            ok = false;
+                            break;
+                        }
                     }
                 }
-            }
-        }while(!ok);
+            } while (!ok);
 
-        //generate a unique card number
-        do {
-            cardNumber = generateRandomDigits(10);
-            ok = true;
-            for (int i = 0; i<accounts.length; i++)
-                for (int j = 0; j<accounts[0].length; j++){
-                    if(accounts[i][j] != null && accounts[i][j].getCardNumber().equals(cardNumber)){
-                        ok = false;
-                        break;
+            //generate a unique card number
+            do {
+                cardNumber = generateRandomDigits(10);
+                ok = true;
+                for (int i = 0; i < accounts.length; i++)
+                    for (int j = 0; j < accounts[0].length; j++) {
+                        if (accounts[i][j] != null && accounts[i][j].getCardNumber().equals(cardNumber)) {
+                            ok = false;
+                            break;
+                        }
                     }
+            } while (!ok);
+
+            //generate CVV
+            String CVV = generateRandomDigits(3);
+
+            //set date to be after four years from current date
+            Date date = new Date(System.currentTimeMillis());
+            Calendar cDate = Calendar.getInstance();
+            cDate.setTime(date);
+            cDate.add(Calendar.YEAR, 4);
+            Date cardExpiryDate = cDate.getTime();
+
+
+            //generate object and add it to data
+            BankAccount ba = new BankAccount(bank, accountOwner, accountName, accountNumber, cardNumber, cardExpiryDate, CVV, balance, currency);
+
+            for (iterator = 0; iterator < accounts[id].length; iterator++) {
+                if (accounts[id][iterator] == null) {
+                    accounts[id][iterator] = ba;
+                    break;
                 }
-        }while(!ok);
-
-        //generate CVV
-        String CVV = generateRandomDigits(3);
-
-        //set date to be after four years from current date
-        Date date = new Date(System.currentTimeMillis());
-        Calendar cDate = Calendar.getInstance();
-        cDate.setTime(date);
-        cDate.add(Calendar.YEAR, 4);
-        Date cardExpiryDate = cDate.getTime();
-
-        //generate object and add it to data
-        BankAccount ba = new BankAccount(bank,accountOwner, accountName, accountNumber,cardNumber,cardExpiryDate,CVV, balance, currency);
-
-        for(iterator = 0; iterator<accounts[id].length; iterator ++){
-            if(accounts[id][iterator] == null) {
-                accounts[id][iterator] = ba;
-                break;
             }
+
+            //initialize transactions entry for this bank account
+            List<Transaction> transaction = new ArrayList<>();
+            transactions.put(ba, transaction);
         }
-
-        //initialize transactions entry for this bank account
-        List<Transaction> transaction = new ArrayList<>();
-        transactions.put(ba,transaction);
     }
 
     /**
@@ -723,25 +733,31 @@ public class Application implements Serializable {
             }
         }while(!okIndex);
 
-        //delete user from data
-        for (int i = id; i < users.length - 1; i++) {
-            users[i] = users[i + 1];
-        }
+        System.out.println(MyConstants.DELETE);
+        System.out.print(MyConstants.R);
+        String delete = scanner.nextLine();
+        if (delete.equals("1")) {
+            //delete user from data
+            for (int i = id; i < users.length - 1; i++) {
+                users[i] = users[i + 1];
+            }
 
-       //delete user's accounts too
-        BankAccount[][] accountsCopy =  new BankAccount[50][10];
-        int k=0;
-        for (int i = 0; i<accounts.length; i++){
-                if(i!=id){
-                    accountsCopy[k]=accounts[i];
+            //delete user's accounts too
+            BankAccount[][] accountsCopy = new BankAccount[50][10];
+            int k = 0;
+            for (int i = 0; i < accounts.length; i++) {
+                if (i != id) {
+                    accountsCopy[k] = accounts[i];
                     k++;
                 }
 
-        }
-        accounts = accountsCopy;
+            }
+            accounts = accountsCopy;
 
-        viewUsers();
-        viewBankAccounts();
+            viewUsers();
+            viewBankAccounts();
+
+        }
 
     }
 
@@ -781,11 +797,17 @@ public class Application implements Serializable {
         }
         else {
             int accountId = scanner.nextInt();
+            System.out.print(MyConstants.R);
             scanner.nextLine();
-            for (int i = accountId; i<accounts[userId].length-1; i++){
-                accounts[userId][i] = accounts[userId][i+1];
+            System.out.println(MyConstants.DELETE);
+            System.out.print(MyConstants.R);
+            String delete = scanner.nextLine();
+            if (delete.equals("1")){
+                for (int i = accountId; i<accounts[userId].length-1; i++){
+                    accounts[userId][i] = accounts[userId][i+1];
+                }
+                viewBankAccounts();
             }
-            viewBankAccounts();
         }
 
     }
@@ -798,8 +820,8 @@ public class Application implements Serializable {
         Set<BankAccount> bankAccounts = transactions.keySet();
         for(BankAccount ba: bankAccounts){
             if(ba.getAccountOwner().getUsername().equals(users[currentUserId].getUsername())) {
-                System.out.println(ba.getAccountNumber() + " - " + ba.getName() + ": " + df2.format(ba.getBalance()) + " " +
-                        ba.getCurrency());
+                System.out.println(MyConstants.BOLD + ba.getAccountNumber() + " - " + ba.getName() + ": " +
+                        df2.format(ba.getBalance()) + " " + ba.getCurrency() + MyConstants.RESET);
                 for (Transaction t : transactions.get(ba)) {
                     if (t.getType().equals(Type.SEND)) {
                         System.out.println(MyConstants.RED + "---" + t + MyConstants.RESET);
@@ -973,104 +995,104 @@ public class Application implements Serializable {
         String details = scanner.nextLine();
 
 
-        int receiverI, senderI, receiverJ, senderJ;
-        double sentAmount;
-        double receivedAmount;
-        BankAccount receiver;
-        BankAccount sender;
-        Transaction receiverTransaction;
-        Transaction senderTransaction;
-        List<Transaction> receiverTransactions = new ArrayList<>();
-        List<Transaction> senderTransactions = new ArrayList<>();
+        System.out.println(MyConstants.MAKE_TRANSACTION);
+        System.out.print(MyConstants.R);
+        String save = scanner.nextLine();
+        if (save.equals("1")) {
+            int receiverI, senderI, receiverJ, senderJ;
+            double sentAmount;
+            double receivedAmount;
+            BankAccount receiver;
+            BankAccount sender;
+            Transaction receiverTransaction;
+            Transaction senderTransaction;
+            List<Transaction> receiverTransactions = new ArrayList<>();
+            List<Transaction> senderTransactions = new ArrayList<>();
 
-        String tryAgain = "1";
-        while(tryAgain.equals("1")){
+            String tryAgain = "1";
+            while (tryAgain.equals("1")) {
 
-            //determine the receiver and sender
-            if(type == Type.RECEIVE){
-                receiverI = currentUserId;
-                receiverJ = myA;
-                senderI = otherI;
-                senderJ = otherJ;
-                receiver = new BankAccount(myAccount);
-                sender = new BankAccount(otherAccount);
-                receivedAmount = amount;
-                //convert amount to sender currency
-                sentAmount = sender.convert(amount,receiver.getCurrency());
-                System.out.println("SENT AMOUNT: " + sentAmount);
-            }
-            else {
-                receiverI = otherI;
-                receiverJ = otherJ;
-                senderI = currentUserId;
-                senderJ = myA;
-                receiver = new BankAccount(otherAccount);
-                sender = new BankAccount(myAccount);
-                sentAmount = amount;
-                //convert amount to receiver currency
-                receivedAmount = receiver.convert(amount,sender.getCurrency());
-            }
-
-            //verify sender has enough money
-            ok = sender.verifyBalance(sentAmount);
-
-
-            if(ok){
-                tryAgain = "0";
-
-                Set<BankAccount> bankAccounts = transactions.keySet();
-                BankAccount senderBA = null;
-                BankAccount receiverBA = null;
-
-                //verify if transactions for this accounts already exists in order to add
-                //a new transaction to list
-                for(BankAccount ba: bankAccounts)
-                {
-                    if(ba.getAccountNumber().equals(sender.getAccountNumber())){
-                        senderTransactions = transactions.get(ba);
-                        senderBA = ba;
-                    }
-                    else if(ba.getAccountNumber().equals(receiver.getAccountNumber())){
-                        receiverTransactions = transactions.get(ba);
-                        receiverBA = ba;
-                    }
-                }
-                if(senderBA != null){
-                    transactions.remove(senderBA);
-                }
-                if(receiverBA != null){
-                    transactions.remove(receiverBA);
+                //determine the receiver and sender
+                if (type == Type.RECEIVE) {
+                    receiverI = currentUserId;
+                    receiverJ = myA;
+                    senderI = otherI;
+                    senderJ = otherJ;
+                    receiver = new BankAccount(myAccount);
+                    sender = new BankAccount(otherAccount);
+                    receivedAmount = amount;
+                    //convert amount to sender currency
+                    sentAmount = sender.convert(amount, receiver.getCurrency());
+                    System.out.println("SENT AMOUNT: " + sentAmount);
+                } else {
+                    receiverI = otherI;
+                    receiverJ = otherJ;
+                    senderI = currentUserId;
+                    senderJ = myA;
+                    receiver = new BankAccount(otherAccount);
+                    sender = new BankAccount(myAccount);
+                    sentAmount = amount;
+                    //convert amount to receiver currency
+                    receivedAmount = receiver.convert(amount, sender.getCurrency());
                 }
 
-                accounts[senderI][senderJ].changeBalance(sentAmount, Type.SEND);
-                accounts[receiverI][receiverJ].changeBalance(receivedAmount, Type.RECEIVE);
+                //verify sender has enough money
+                ok = sender.verifyBalance(sentAmount);
 
-                receiverTransaction = new Transaction(secondAccount, Type.RECEIVE, category, receivedAmount, details);
-                senderTransaction = new Transaction(myAccount.getAccountNumber(), Type.SEND, category, sentAmount, details);
 
-                receiverTransactions.add(receiverTransaction);
-                transactions.put(accounts[receiverI][receiverJ],receiverTransactions);
+                if (ok) {
+                    tryAgain = "0";
 
-                senderTransactions.add(senderTransaction);
-                transactions.put(accounts[senderI][senderJ],senderTransactions);
-            }
-            else {
-                //ask user if he wants to add another amount if sender does not have enough money
-                System.out.println(MyConstants.NOT_ENOUGH_MONEY);
-                System.out.println(MyConstants.TRY_AGAIN);
-                tryAgain = scanner.nextLine();
-                if(tryAgain.equals("1")){
-                    do {
-                        okDouble = true;
-                        System.out.print(MyConstants.AMOUNT);
-                        try {
-                            amount = scanner.nextDouble();
-                        } catch (Exception e) {
-                            System.out.println(MyConstants.WRONG_INPUT);
-                            okDouble = false;
+                    Set<BankAccount> bankAccounts = transactions.keySet();
+                    BankAccount senderBA = null;
+                    BankAccount receiverBA = null;
+
+                    //verify if transactions for this accounts already exists in order to add
+                    //a new transaction to list
+                    for (BankAccount ba : bankAccounts) {
+                        if (ba.getAccountNumber().equals(sender.getAccountNumber())) {
+                            senderTransactions = transactions.get(ba);
+                            senderBA = ba;
+                        } else if (ba.getAccountNumber().equals(receiver.getAccountNumber())) {
+                            receiverTransactions = transactions.get(ba);
+                            receiverBA = ba;
                         }
-                        scanner.nextLine();
-                    }while(!okDouble);
+                    }
+                    if (senderBA != null) {
+                        transactions.remove(senderBA);
+                    }
+                    if (receiverBA != null) {
+                        transactions.remove(receiverBA);
+                    }
+
+                    accounts[senderI][senderJ].changeBalance(sentAmount, Type.SEND);
+                    accounts[receiverI][receiverJ].changeBalance(receivedAmount, Type.RECEIVE);
+
+                    receiverTransaction = new Transaction(secondAccount, Type.RECEIVE, category, receivedAmount, details);
+                    senderTransaction = new Transaction(myAccount.getAccountNumber(), Type.SEND, category, sentAmount, details);
+
+                    receiverTransactions.add(receiverTransaction);
+                    transactions.put(accounts[receiverI][receiverJ], receiverTransactions);
+
+                    senderTransactions.add(senderTransaction);
+                    transactions.put(accounts[senderI][senderJ], senderTransactions);
+                } else {
+                    //ask user if he wants to add another amount if sender does not have enough money
+                    System.out.println(MyConstants.TRY_AGAIN);
+                    tryAgain = scanner.nextLine();
+                    if (tryAgain.equals("1")) {
+                        do {
+                            okDouble = true;
+                            System.out.print(MyConstants.AMOUNT);
+                            try {
+                                amount = scanner.nextDouble();
+                            } catch (Exception e) {
+                                System.out.println(MyConstants.WRONG_INPUT);
+                                okDouble = false;
+                            }
+                            scanner.nextLine();
+                        } while (!okDouble);
+                    }
                 }
             }
         }
@@ -1142,71 +1164,72 @@ public class Application implements Serializable {
             scanner.nextLine();
         }while(!okDouble);
 
-        Transaction transaction;
-        List<Transaction> transactionsList = new ArrayList<>();
+        System.out.println(MyConstants.MAKE_TRANSACTION);
+        System.out.print(MyConstants.R);
+        String save = scanner.nextLine();
+        if (save.equals("1")) {
+            Transaction transaction;
+            List<Transaction> transactionsList = new ArrayList<>();
 
-        Set<BankAccount> bankAccounts = transactions.keySet();
+            Set<BankAccount> bankAccounts = transactions.keySet();
 
 
-        if(method.equals("add")){
+            if (method.equals("add")) {
 
-            //verify if there are already transactions for this account to add a new one
-            for(BankAccount ba: bankAccounts)
-            {
-                if(ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())){
-                    transactionsList = transactions.get(ba);
-                    transactions.remove(ba);
+                //verify if there are already transactions for this account to add a new one
+                for (BankAccount ba : bankAccounts) {
+                    if (ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())) {
+                        transactionsList = transactions.get(ba);
+                        transactions.remove(ba);
+                    }
                 }
+
+                //change balance
+                accounts[currentUserId][myA].changeBalance(amount, Type.RECEIVE);
+                transaction = new Transaction(MyConstants.ADDED_YOU, Type.RECEIVE, Category.OTHER, amount, MyConstants.ADDED_YOU);
+                transactionsList.add(transaction);
+                transactions.put(accounts[currentUserId][myA], transactionsList);
+            } else {
+                String tryAgain = "1";
+                boolean ok;
+                do {
+                    //verify if the balance is sufficient to withdraw money
+                    ok = accounts[currentUserId][myA].verifyBalance(amount);
+
+                    if (ok) {
+                        //verify if there are already transactions for this account to add a new one
+                        for (BankAccount ba : bankAccounts) {
+                            if (ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())) {
+                                transactionsList = transactions.get(ba);
+                                transactions.remove(ba);
+                            }
+                        }
+
+                        //change balance
+                        accounts[currentUserId][myA].changeBalance(amount, Type.SEND);
+                        transaction = new Transaction(MyConstants.WITHDRAWN_YOU, Type.SEND, Category.OTHER, amount, MyConstants.WITHDRAWN_YOU);
+                        transactionsList.add(transaction);
+                        transactions.put(accounts[currentUserId][myA], transactionsList);
+                    } else {
+                        System.out.println(MyConstants.TRY_AGAIN);
+                        tryAgain = scanner.nextLine();
+                        if (tryAgain.equals("1")) {
+                            //verify if user wants to add another amount if there are not enough money into account
+                            do {
+                                okDouble = true;
+                                System.out.print(MyConstants.AMOUNT);
+                                try {
+                                    amount = scanner.nextDouble();
+                                } catch (Exception e) {
+                                    System.out.println(MyConstants.WRONG_INPUT);
+                                    okDouble = false;
+                                }
+                                scanner.nextLine();
+                            } while (!okDouble);
+                        }
+                    }
+                } while (tryAgain.equals("1"));
             }
-
-            //change balance
-            accounts[currentUserId][myA].changeBalance(amount,Type.RECEIVE);
-            transaction = new Transaction(MyConstants.ADDED_YOU,Type.RECEIVE,Category.OTHER,amount,MyConstants.ADDED_YOU);
-            transactionsList.add(transaction);
-            transactions.put(accounts[currentUserId][myA],transactionsList);
-        }
-        else {
-            String tryAgain = "1";
-            boolean ok;
-            do {
-                //verify if the balance is sufficient to withdraw money
-                ok = accounts[currentUserId][myA].verifyBalance(amount);
-
-               if(ok) {
-                   //verify if there are already transactions for this account to add a new one
-                   for(BankAccount ba: bankAccounts)
-                   {
-                       if(ba.getAccountNumber().equals(accounts[currentUserId][myA].getAccountNumber())){
-                           transactionsList = transactions.get(ba);
-                           transactions.remove(ba);
-                       }
-                   }
-
-                   //change balance
-                   accounts[currentUserId][myA].changeBalance(amount,Type.SEND);
-                   transaction = new Transaction(MyConstants.WITHDRAW_MONEY,Type.SEND,Category.OTHER,amount,MyConstants.WITHDRAW_MONEY);
-                   transactionsList.add(transaction);
-                   transactions.put(accounts[currentUserId][myA],transactionsList);
-               }
-               else{
-                   System.out.println(MyConstants.TRY_AGAIN);
-                   tryAgain = scanner.nextLine();
-                   if(tryAgain.equals("1")){
-                       //verify if user wants to add another amount if there are not enough money into account
-                       do {
-                           okDouble = true;
-                           System.out.print(MyConstants.AMOUNT);
-                           try {
-                               amount = scanner.nextDouble();
-                           } catch (Exception e) {
-                               System.out.println(MyConstants.WRONG_INPUT);
-                               okDouble = false;
-                           }
-                           scanner.nextLine();
-                       }while(!okDouble);
-                   }
-               }
-            }while(tryAgain.equals("1"));
         }
     }
 

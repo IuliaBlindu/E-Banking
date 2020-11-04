@@ -84,6 +84,7 @@ public final class MyConstants {
     public static final String RED = "\033[0;31m";
     public static final String BLUE = "\033[0;34m";
     public static final String RESET = "\033[0m";
+    public static final String BOLD = "\u001B[1m";
 
     public static final String SEPARATOR = "----------------------------------------------------------------------";
 
@@ -102,4 +103,7 @@ public final class MyConstants {
 
     public static final String AGE_NOT_VALID = "Age not valid! User has to have at least 18 years old!";
 
+    public static final String SAVE_CHANGES = "Do you want to save the data you added? \n 0-> NO \n 1-> YES";
+    public static final String DELETE = "Are you sure you want to delete data? \n 0-> NO\n 1-> YES";
+    public static final String MAKE_TRANSACTION = "Do you want to make the transaction? \n 0-> NO\n 1-> YES";
 }
